@@ -1,4 +1,4 @@
-# Ansh Mangukiya — Portfolio
+# Ansh Mangukiya — Portfolio.
 
 Personal portfolio for freelance AI engineering work. Next.js 15 (App Router) + Tailwind CSS v4 + Motion, with a built-in AI chat widget that doubles as a live demo.
 
