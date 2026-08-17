@@ -10,7 +10,7 @@ export const site = {
   email: "anshmangukiya.ai@gmail.com",
   phone: "+91 70692 16178",
   phoneHref: "tel:+917069216178",
-  resume: "/resume.pdf",
+  resume: "/api/resume-download",
   tagline: "I engineer production GenAI systems — RAG pipelines, fine-tuned LLMs & multi-agent platforms.",
   description:
     "AI Engineer building production Generative AI — RAG pipelines, LLM fine-tuning, vLLM multi-GPU inference optimization, and LangGraph multi-agent systems.",
