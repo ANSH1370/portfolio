@@ -42,8 +42,13 @@ Phase 2 (later): persist submissions to a database as well.
 
 ## AI chat widget
 
-The floating chat button works in two modes:
+The floating chat button is a live chat over `/api/chat`, which picks the best
+available mode and falls back down the list if one fails:
 
+- **RAG mode (preferred):** set `RAG_API_URL` to the deployed `ansh-ai-assistant`
+  service (FastAPI on Render, separate repo). Answers come from the real corpus
+  with source citations shown in the widget. The widget pings `GET /api/chat` on
+  open to wake Render's free-tier instance early.
 - **Demo mode (default, free):** answers from the FAQ list in `lib/data.ts`. No key needed.
 - **Real AI mode:** create `.env.local` with:
 

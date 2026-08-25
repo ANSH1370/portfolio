@@ -2,15 +2,75 @@ import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import { site, projects, faq, experience, skillGroups } from "@/lib/data";
 
-// Works in two modes:
-//  1. Demo mode (no API key set): answers from the FAQ list in lib/data.ts. Free.
+// Works in three modes, best-available-first:
+//  1. RAG mode: set RAG_API_URL to the ansh-ai-assistant deployment (Render).
+//     Answers come from the corpus-backed LangGraph pipeline, with citations.
 //  2. AI mode: set ANTHROPIC_API_KEY in .env.local / Vercel env vars and the
 //     widget becomes a real LLM assistant. Optionally set ANTHROPIC_MODEL
 //     (default "claude-opus-5"; "claude-haiku-4-5" is the cheapest option).
+//  3. Demo mode (no keys set): answers from the FAQ list in lib/data.ts. Free.
+// Each mode falls back to the next on failure so the widget never breaks.
 
 const MODEL = process.env.ANTHROPIC_MODEL || "claude-opus-5";
-const MAX_MESSAGES = 12;
-const MAX_CHARS = 1000;
+const MAX_MESSAGES = 12; // also the RAG backend's request-validation cap
+const MAX_CHARS = 1000; // also the RAG backend's per-message cap
+
+// Render free tier cold-starts in ~30-50s; the widget pings GET /api/chat on
+// open to wake it early, so by first question this timeout is usually plenty.
+const RAG_TIMEOUT_MS = 20_000;
+export const maxDuration = 30;
+
+type Citation = { title: string; url: string };
+
+function ragBase(): string | null {
+  const base = process.env.RAG_API_URL;
+  return base ? base.replace(/\/+$/, "") : null;
+}
+
+async function ragAnswer(
+  history: { role: string; content: string }[]
+): Promise<{ reply: string; citations: Citation[] } | null> {
+  const base = ragBase();
+  if (!base) return null;
+  try {
+    const res = await fetch(`${base}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: history }),
+      signal: AbortSignal.timeout(RAG_TIMEOUT_MS),
+    });
+    if (!res.ok) throw new Error(`RAG backend responded ${res.status}`);
+    const data = await res.json();
+    if (typeof data?.answer !== "string" || !data.answer.trim()) {
+      throw new Error("RAG backend returned an empty answer");
+    }
+    // The widget shows a Sources row instead of inline [n] markers, and the
+    // marker numbers don't survive the backend's citation dedupe anyway.
+    // Covers both [n] and the 【n†L1-L3】 style gpt-oss models emit.
+    const reply = data.answer.replace(/\s*(?:\[\d+\]|【\d+[^】]*】)/g, "").trim();
+    const citations: Citation[] = Array.isArray(data.citations)
+      ? data.citations.filter(
+          (c: Citation) => typeof c?.title === "string" && typeof c?.url === "string"
+        )
+      : [];
+    return { reply, citations };
+  } catch (err) {
+    console.error("RAG backend error (falling back):", err);
+    return null;
+  }
+}
+
+// Warmup ping — the ChatWidget calls this when opened so a cold Render
+// instance starts booting while the visitor types their first question.
+export async function GET() {
+  const base = ragBase();
+  if (base) {
+    // Await so the serverless runtime doesn't kill the request mid-flight;
+    // a short timeout is enough to trigger the wake-up.
+    await fetch(`${base}/health`, { signal: AbortSignal.timeout(5000) }).catch(() => {});
+  }
+  return NextResponse.json({ ok: true });
+}
 
 const systemPrompt = `You are the friendly AI assistant on ${site.name}'s personal portfolio website. ${site.name} is an ${site.role} working on production Generative AI.
 
@@ -44,15 +104,27 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
-  // Basic hygiene: cap history and message size, keep only expected fields
+  // Basic hygiene: cap history and message size, keep only expected fields.
+  // Empty messages are dropped too — the RAG backend rejects them (min_length=1).
   const history: ChatMessage[] = messages
     .slice(-MAX_MESSAGES)
-    .filter((m) => (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
+    .filter(
+      (m) =>
+        (m.role === "user" || m.role === "assistant") &&
+        typeof m.content === "string" &&
+        m.content.trim().length > 0
+    )
     .map((m) => ({ role: m.role, content: m.content.slice(0, MAX_CHARS) }));
 
   const lastUser = [...history].reverse().find((m) => m.role === "user");
   if (!lastUser) {
     return NextResponse.json({ error: "No user message" }, { status: 400 });
+  }
+
+  // RAG mode — corpus-backed assistant with citations
+  const rag = await ragAnswer(history);
+  if (rag) {
+    return NextResponse.json({ reply: rag.reply, citations: rag.citations, source: "rag" });
   }
 
   // Demo mode — no key configured
