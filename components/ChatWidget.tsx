@@ -10,10 +10,10 @@ import { ChatIcon, CloseIcon, SendIcon, BoltIcon } from "./Icons";
 // backend is unreachable — so the widget always answers something.
 
 const starterQuestions = [
+  "How was this chatbot built?",
   "What did Ansh build at Commercient?",
-  "How did he reach 150+ tokens/sec on vLLM?",
-  "Which of his projects use RAG?",
-  "How can I get in touch with him?",
+  "Can Ansh build something like this for my business?",
+  "How do I get in touch with him?",
 ];
 
 type Citation = { title: string; url: string };
@@ -28,23 +28,23 @@ const WELCOME: Msg = {
 const ERROR_REPLY = `Hmm, I couldn't reach my brain just now — please try again in a moment, or message Ansh directly at ${site.email}.`;
 
 const MAX_INPUT_CHARS = 1000; // matches the API's per-message cap
+const SLOW_HINT_AFTER_MS = 6_000; // free-tier backend may be waking up
 
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([WELCOME]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [slow, setSlow] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const warmedUp = useRef(false);
 
-  // Wake the RAG backend (Render free tier cold-starts) while the visitor types.
+  // Wake the RAG backend (Render free tier cold-starts in ~30-50s) as soon as
+  // the page loads — not when the widget opens — so it's usually ready by the
+  // time a visitor asks their first question.
   useEffect(() => {
-    if (open && !warmedUp.current) {
-      warmedUp.current = true;
-      fetch("/api/chat").catch(() => {});
-    }
-  }, [open]);
+    fetch("/api/chat").catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (open) inputRef.current?.focus();
@@ -61,6 +61,8 @@ export default function ChatWidget() {
     setMessages(next);
     setInput("");
     setSending(true);
+    setSlow(false);
+    const slowTimer = setTimeout(() => setSlow(true), SLOW_HINT_AFTER_MS);
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
@@ -80,6 +82,8 @@ export default function ChatWidget() {
     } catch {
       setMessages((m) => [...m, { role: "assistant", content: ERROR_REPLY }]);
     } finally {
+      clearTimeout(slowTimer);
+      setSlow(false);
       setSending(false);
     }
   }
@@ -168,7 +172,7 @@ export default function ChatWidget() {
               ))}
 
               {sending && (
-                <div className="flex justify-start">
+                <div className="flex flex-col items-start gap-1.5">
                   <div className="flex items-center gap-1 rounded-2xl rounded-bl-sm border border-line bg-ink px-3.5 py-3">
                     {[0, 1, 2].map((d) => (
                       <motion.span
@@ -179,6 +183,12 @@ export default function ChatWidget() {
                       />
                     ))}
                   </div>
+                  {slow && (
+                    <p className="px-1 text-[11px] text-fog/70">
+                      Waking up the assistant (free hosting naps) — usually under 30 s. Real
+                      answer with sources coming.
+                    </p>
+                  )}
                 </div>
               )}
 

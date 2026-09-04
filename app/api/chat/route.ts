@@ -15,10 +15,14 @@ const MODEL = process.env.ANTHROPIC_MODEL || "claude-opus-5";
 const MAX_MESSAGES = 12; // also the RAG backend's request-validation cap
 const MAX_CHARS = 1000; // also the RAG backend's per-message cap
 
-// Render free tier cold-starts in ~30-50s; the widget pings GET /api/chat on
-// open to wake it early, so by first question this timeout is usually plenty.
-const RAG_TIMEOUT_MS = 20_000;
-export const maxDuration = 30;
+// Render free tier cold-starts in ~30-50s (the backend also warms its
+// embedding model before opening the port). The widget pings GET /api/chat on
+// page load to wake it early, and a keep-alive job pings every 10 min, so this
+// budget is only ever spent when both of those missed. A slow real answer
+// beats a fast canned one: the widget shows a "waking up" note after a few
+// seconds, so the wait is explained rather than silent.
+const RAG_TIMEOUT_MS = 50_000;
+export const maxDuration = 60;
 
 type Citation = { title: string; url: string };
 

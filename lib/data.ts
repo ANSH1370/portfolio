@@ -14,8 +14,10 @@ export const site = {
   tagline: "I engineer production GenAI systems — RAG pipelines, fine-tuned LLMs & multi-agent platforms.",
   description:
     "AI Engineer building production Generative AI — RAG pipelines, LLM fine-tuning, vLLM multi-GPU inference optimization, and LangGraph multi-agent systems.",
-  // TODO(Ansh): set this to your final domain once purchased (no trailing slash)
-  url: "https://anshmangukiya.com",
+  // Live URL (no trailing slash). Used for canonical/OG/sitemap — must be a
+  // domain that actually resolves, or link previews break. Swap when a custom
+  // domain is purchased and connected in Vercel.
+  url: "https://anshmangukiya.vercel.app",
   location: "Surat, India · working worldwide",
   github: "https://github.com/ANSH1370",
   linkedin: "https://www.linkedin.com/in/anshmangukiya",

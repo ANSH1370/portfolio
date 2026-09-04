@@ -48,7 +48,8 @@ available mode and falls back down the list if one fails:
 - **RAG mode (preferred):** set `RAG_API_URL` to the deployed `ansh-ai-assistant`
   service (FastAPI on Render, separate repo). Answers come from the real corpus
   with source citations shown in the widget. The widget pings `GET /api/chat` on
-  open to wake Render's free-tier instance early.
+  page load to wake Render's free-tier instance early, and waits up to 50 s for
+  the real answer (showing a "waking up" note) before falling back.
 - **Demo mode (default, free):** answers from the FAQ list in `lib/data.ts`. No key needed.
 - **Real AI mode:** create `.env.local` with:
 
