@@ -63,6 +63,13 @@ available mode and falls back down the list if one fails:
   Project → Settings → Environment Variables. The route caps history at 12 messages
   and 512 output tokens per reply to keep costs tiny.
 
+## Demo assistants for prospects
+
+`/demo/<slug>` shows a prospect their own AI assistant, trained on their website —
+same chat surface (`components/ChatPanel.tsx`), separate backend tenant, separate
+data, `noindex`. Create tenants in the `ansh-ai-assistant` repo (`DEMOS.md` there);
+nothing to configure here beyond `RAG_API_URL`.
+
 ## Deploy (Vercel, free)
 
 1. Push this folder to a new GitHub repo (e.g. `portfolio`).
