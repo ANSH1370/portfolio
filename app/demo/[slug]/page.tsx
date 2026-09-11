@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import DemoShell, { type DemoTenant } from "@/components/DemoShell";
 
 // A prospect's demo assistant: /demo/<slug>. Tenant info comes from the RAG
@@ -42,6 +42,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function DemoPage({ params }: Props) {
   const { slug } = await params;
+  // Mail clients sometimes glue trailing punctuation onto a pasted link
+  // ("/demo/cahanlaw." showed up in analytics as a 404). Recover instead of 404.
+  const clean = slug.toLowerCase().replace(/[^a-z0-9-]+$/, "");
+  if (clean !== slug && SLUG.test(clean)) redirect(`/demo/${clean}`);
   const tenant = await getTenant(slug);
   if (!tenant) notFound();
   return <DemoShell tenant={tenant} />;
