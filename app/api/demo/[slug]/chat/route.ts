@@ -20,7 +20,8 @@ function ragBase(): string | null {
 
 export async function GET() {
   const base = ragBase();
-  if (base) await fetch(`${base}/health`, { signal: AbortSignal.timeout(5000) }).catch(() => {});
+  // Hold the connection long enough to wake a cold instance, not just ping a warm one.
+  if (base) await fetch(`${base}/health`, { signal: AbortSignal.timeout(55_000) }).catch(() => {});
   return NextResponse.json({ ok: true });
 }
 

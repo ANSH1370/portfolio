@@ -22,6 +22,7 @@ const MAX_CHARS = 1000; // also the RAG backend's per-message cap
 // beats a fast canned one: the widget shows a "waking up" note after a few
 // seconds, so the wait is explained rather than silent.
 const RAG_TIMEOUT_MS = 50_000;
+const WARM_TIMEOUT_MS = 55_000; // long enough to wake a sleeping instance, not just poke a live one
 export const maxDuration = 60;
 
 type Citation = { title: string; url: string };
@@ -69,9 +70,12 @@ async function ragAnswer(
 export async function GET() {
   const base = ragBase();
   if (base) {
-    // Await so the serverless runtime doesn't kill the request mid-flight;
-    // a short timeout is enough to trigger the wake-up.
-    await fetch(`${base}/health`, { signal: AbortSignal.timeout(5000) }).catch(() => {});
+    // Await so the serverless runtime doesn't kill the request mid-flight,
+    // and hold the connection long enough for a COLD instance to finish booting
+    // (~30-50s). A 5s ping only ever reset the idle timer on an already-warm
+    // instance — it never actually woke a sleeping one, which is how the demo
+    // ended up 404-ing for visitors.
+    await fetch(`${base}/health`, { signal: AbortSignal.timeout(WARM_TIMEOUT_MS) }).catch(() => {});
   }
   return NextResponse.json({ ok: true });
 }
