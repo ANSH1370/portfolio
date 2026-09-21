@@ -56,9 +56,25 @@ export type Project = {
   stack: string[];
   link: string;
   featured?: boolean;
+  // Set on projects whose `link` points inside this site rather than to GitHub.
+  internal?: boolean;
+  // Optional call-to-action line rendered at the foot of the card.
+  badge?: string;
 };
 
 export const projects: Project[] = [
+  {
+    title: "Fine-Tuning Field Notes",
+    summary:
+      "Five months of LLM fine-tuning at production scale — written up in full.",
+    problem:
+      "332 training launches, 66 that finished, and one recipe that held. A long-form engineering write-up of how a 70B teacher model generated the synthetic dataset, how QLoRA adapters were trained across five toolchains (Unsloth, Torchtune, Axolotl, Accelerate, trl), why most runs died, and the relevance gate that stopped the tuned model answering questions it had no business answering — with the real loss curves from the saved checkpoints.",
+    stack: ["QLoRA", "PyTorch", "Hugging Face", "Unsloth", "vLLM", "W&B"],
+    link: "/fine-tuning-field-notes",
+    featured: true,
+    internal: true,
+    badge: "Read the write-up",
+  },
   {
     title: "CareerMatch AI",
     summary: "AI-powered resume-to-company recommendation engine.",

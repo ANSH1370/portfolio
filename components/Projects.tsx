@@ -33,8 +33,7 @@ export default function Projects() {
             >
               <a
                 href={p.link}
-                target="_blank"
-                rel="noreferrer"
+                {...(p.internal ? {} : { target: "_blank", rel: "noreferrer" })}
                 className="card group flex h-full flex-col p-7"
               >
                 <div className="flex items-start justify-between gap-4">
@@ -55,6 +54,12 @@ export default function Projects() {
                     </span>
                   ))}
                 </div>
+                {p.badge && (
+                  <p className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-cyan transition-transform group-hover:translate-x-0.5">
+                    {p.badge}
+                    <span aria-hidden="true">&rarr;</span>
+                  </p>
+                )}
               </a>
             </Reveal>
           ))}

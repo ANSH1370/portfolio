@@ -9,5 +9,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 1,
     },
+    {
+      // Static long-form write-up served from public/fine-tuning-field-notes/.
+      url: `${site.url}/fine-tuning-field-notes`,
+      lastModified: new Date("2026-09-21"),
+      changeFrequency: "yearly",
+      priority: 0.8,
+    },
   ];
 }
