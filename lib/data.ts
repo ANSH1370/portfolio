@@ -64,7 +64,7 @@ export type Project = {
 
 export const projects: Project[] = [
   {
-    title: "Fine-Tuning Field Notes",
+    title: "Production QLoRA Pipeline",
     summary:
       "Five months of LLM fine-tuning at production scale — written up in full.",
     problem:
