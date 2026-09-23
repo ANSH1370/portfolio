@@ -23,6 +23,9 @@ export const metadata: Metadata = {
     template: `%s — ${site.name}`,
   },
   description: site.description,
+  // Resolved against metadataBase. Without it the apex, www and the original
+  // .vercel.app domain all serve identical HTML with nothing naming a winner.
+  alternates: { canonical: "/" },
   keywords: [
     "Ansh Mangukiya",
     "AI Engineer",

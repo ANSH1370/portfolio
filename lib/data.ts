@@ -15,9 +15,10 @@ export const site = {
   description:
     "AI Engineer building production Generative AI — RAG pipelines, LLM fine-tuning, vLLM multi-GPU inference optimization, and LangGraph multi-agent systems.",
   // Live URL (no trailing slash). Used for canonical/OG/sitemap — must be a
-  // domain that actually resolves, or link previews break. Swap when a custom
-  // domain is purchased and connected in Vercel.
-  url: "https://anshmangukiya.vercel.app",
+  // domain that actually resolves, or link previews break. The apex is
+  // canonical: www.anshmangukiya.in 308-redirects here, and the original
+  // anshmangukiya.vercel.app still serves so older links keep working.
+  url: "https://anshmangukiya.in",
   location: "Surat, India · working worldwide",
   github: "https://github.com/ANSH1370",
   linkedin: "https://www.linkedin.com/in/anshmangukiya",
