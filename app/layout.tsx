@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { site } from "@/lib/data";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
