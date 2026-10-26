@@ -337,9 +337,9 @@ details.tv .tbl{margin:10px 0 0}
 <tr><td class="folder">FineTunning Pipeline/</td><td><span class="pill frame">2</span></td><td>Generation, preprocessing, Ray Tune, SFTTrainer run, TF-IDF classifier</td><td><a href="#e2-pipeline">2.3</a></td></tr>
 <tr><td class="folder">FINETUNING_ACCERLATE/</td><td><span class="pill frame">2</span></td><td>Modular pipeline, BERT classifier, the device-map failure</td><td><a href="#e2-accelerate">2.4</a></td></tr>
 <tr><td class="folder">Finetuning_Pipeline_30000/</td><td><span class="pill prod">3</span></td><td>Bulk QwQ generation, the served Gemma adapter, FastAPI + Streamlit</td><td><a href="#e3-generation">3.1</a>, <a href="#e3-serving">3.6</a></td></tr>
-<tr><td class="folder">COMMERCIENT_CLAUD_FINETUNING/</td><td><span class="pill prod">3</span></td><td>Axolotl YAML and DeepSpeed configs (never trained), vendored axolotl clone</td><td><a href="#e3-axolotl">3.3</a></td></tr>
-<tr><td class="folder">COMMERCIENT_CLAUDE_FINETUNING/</td><td><span class="pill prod">3</span></td><td>The reference trainer, 90 launch directories, the 117-hour run</td><td><a href="#e3-trainer">3.4</a></td></tr>
-<tr><td class="folder">COMMERCIENT_GEMMA_FINETUNING/</td><td><span class="pill prod">3</span></td><td>Multi-customer CLI, row-wise generation, DuckDB store, Flask UI</td><td><a href="#e3-cli">3.5</a></td></tr>
+<tr><td class="folder">ACME_CLAUD_FINETUNING/</td><td><span class="pill prod">3</span></td><td>Axolotl YAML and DeepSpeed configs (never trained), vendored axolotl clone</td><td><a href="#e3-axolotl">3.3</a></td></tr>
+<tr><td class="folder">ACME_CLAUDE_FINETUNING/</td><td><span class="pill prod">3</span></td><td>The reference trainer, 90 launch directories, the 117-hour run</td><td><a href="#e3-trainer">3.4</a></td></tr>
+<tr><td class="folder">ACME_GEMMA_FINETUNING/</td><td><span class="pill prod">3</span></td><td>Multi-customer CLI, row-wise generation, DuckDB store, Flask UI</td><td><a href="#e3-cli">3.5</a></td></tr>
 <tr><td class="folder">axolotl/, Ditillation/thinc-9.1.1/, */unsloth_compiled_cache/</td><td>—</td><td>Vendored third-party code, not part of the research</td><td>—</td></tr>
 <tr><td class="folder">wandb/, */wandb/, */checkpoint-*, ray_results/, tensorboard_logs/</td><td>—</td><td>Run logs and optimizer states; mined for the results chapter</td><td><a href="#results">Results</a></td></tr>
 </tbody></table></div>
@@ -405,10 +405,10 @@ details.tv .tbl{margin:10px 0 0}
 
 <div class="prose">
 <h3>The stack in its most complete form</h3>
-<p>The June trainer in <code>COMMERCIENT_CLAUDE_FINETUNING/src/fine_tuning.py</code> is the archive's reference implementation. Its model-loading block shows the recipe with every safety check the earlier eras lacked: compute dtype chosen from the config, k-bit preparation before LoRA, cache disabled for training, and special-token ids copied into the model config.</p>
+<p>The June trainer in <code>ACME_CLAUDE_FINETUNING/src/fine_tuning.py</code> is the archive's reference implementation. Its model-loading block shows the recipe with every safety check the earlier eras lacked: compute dtype chosen from the config, k-bit preparation before LoRA, cache disabled for training, and special-token ids copied into the model config.</p>
 </div>
 
-<figure class="code"><figcaption><span class="path">COMMERCIENT_CLAUDE_FINETUNING/src/fine_tuning.py</span><span class="meta">lines 154–190 · quantisation, load, k-bit preparation</span></figcaption>
+<figure class="code"><figcaption><span class="path">ACME_CLAUDE_FINETUNING/src/fine_tuning.py</span><span class="meta">lines 154–190 · quantisation, load, k-bit preparation</span></figcaption>
 <pre><code class="language-python">            bnb_config = BitsAndBytesConfig(
                 load_in_4bit=True,
                 bnb_4bit_quant_type="nf4",
@@ -446,7 +446,7 @@ details.tv .tbl{margin:10px 0 0}
             if tokenizer.eos_token_id is not None:
                 model.config.eos_token_id = tokenizer.eos_token_id</code></pre></figure>
 
-<figure class="code"><figcaption><span class="path">COMMERCIENT_CLAUDE_FINETUNING/src/fine_tuning.py</span><span class="meta">lines 232–239, 556–566, 592–604 · LoRA, early stopping, SFTTrainer</span></figcaption>
+<figure class="code"><figcaption><span class="path">ACME_CLAUDE_FINETUNING/src/fine_tuning.py</span><span class="meta">lines 232–239, 556–566, 592–604 · LoRA, early stopping, SFTTrainer</span></figcaption>
 <pre><code class="language-python">        lora_config = LoraConfig(
             r=self.config["lora_r"],
             lora_alpha=self.config["lora_alpha"],
@@ -491,18 +491,18 @@ details.tv .tbl{margin:10px 0 0}
 <tbody>
 <tr><td class="folder">fine_tuned_llama3_qlora, …_ansh_v, …_v_4_instruct, …_v_5_TAG, …_v_6_TAG_JSON</td><td>25–27 Feb</td><td>Llama 3 / 3.1 8B</td><td class="num">8</td><td class="num">32</td><td>q_proj, v_proj</td><td class="num">13.6 MB</td></tr>
 <tr><td class="folder">fine_tuned_llama3_qlora_ansh_v_7</td><td>27 Feb</td><td>Llama-3.1-8B</td><td class="num">10</td><td class="num">16</td><td>7 projections + <b>lm_head</b></td><td class="num">1.16 GB</td></tr>
-<tr><td class="folder">Ditillation/Commercient_faq_fine_tune_v_1</td><td>28 Feb</td><td>Llama-3.1-8B</td><td class="num">8</td><td class="num">32</td><td>q_proj, v_proj</td><td class="num">13.6 MB</td></tr>
+<tr><td class="folder">Ditillation/Acme_faq_fine_tune_v_1</td><td>28 Feb</td><td>Llama-3.1-8B</td><td class="num">8</td><td class="num">32</td><td>q_proj, v_proj</td><td class="num">13.6 MB</td></tr>
 <tr><td class="folder">Ditillation/llama3_8b_faq_finetuned</td><td>3 Mar</td><td>Meta-Llama-3-8B</td><td class="num">16</td><td class="num">32</td><td>7 projections</td><td class="num">168 MB</td></tr>
 <tr><td class="folder">Unsloth/Lamma_3_1_8B_Qlora_Co_Unsolth_Version_1_1</td><td>11 Mar</td><td>Llama-3.1-8B (Unsloth 4-bit)</td><td class="num">16</td><td class="num">16</td><td>7 projections</td><td class="num">168 MB</td></tr>
 <tr><td class="folder">Unsloth/Qwen_2_5_7B_Qlora_Co_Unsolth_Version_1_1</td><td>11 Mar</td><td>Qwen2.5-7B (Unsloth 4-bit)</td><td class="num">16</td><td class="num">16</td><td>7 projections</td><td class="num">161 MB</td></tr>
 <tr><td class="folder">Torchtune/fine_tuned_llama_torchtune, _V_1</td><td>27 Mar</td><td>Llama-3.1-8B</td><td class="num">8</td><td class="num">16</td><td>q_proj, v_proj (peft default)</td><td class="num">13.6 MB</td></tr>
 <tr><td class="folder">Torchtune/…_V_2 / _V_3</td><td>27 Mar</td><td>Llama-3.1-8B</td><td class="num">10 / 12</td><td class="num">32</td><td>q_proj, v_proj (peft default)</td><td class="num">17.1 / 20.5 MB</td></tr>
 <tr><td class="folder">FineTunning Pipeline/llama3-8b-finetuned</td><td>14 Apr</td><td>Meta-Llama-3-8B</td><td class="num">64</td><td class="num">128</td><td>q, k, v, o</td><td class="num">218 MB</td></tr>
-<tr><td class="folder">FineTunning Pipeline/Fine_tunned_ALL_SYNC_Data, fine_tuned_model, Commercient_fine_tuned_model</td><td>17–22 Apr</td><td>Llama-3.1-8B</td><td class="num">12</td><td class="num">32</td><td>q_proj, v_proj (peft default)</td><td class="num">20.5 MB</td></tr>
+<tr><td class="folder">FineTunning Pipeline/Fine_tunned_ALL_SYNC_Data, fine_tuned_model, Acme_fine_tuned_model</td><td>17–22 Apr</td><td>Llama-3.1-8B</td><td class="num">12</td><td class="num">32</td><td>q_proj, v_proj (peft default)</td><td class="num">20.5 MB</td></tr>
 <tr><td class="folder">Finetuning_Pipeline_30000/fine_tuned_gemma_v_2 (served)</td><td>14 May</td><td>unsloth/gemma-2-9b-it</td><td class="num">16</td><td class="num">32</td><td>7 projections</td><td class="num">216 MB</td></tr>
-<tr><td class="folder">Finetuning_Pipeline_30000/All_Commercient_Data_Finetune_Gemma_version_1</td><td>4 Jun</td><td>unsloth/gemma-2-9b-it</td><td class="num">8</td><td class="num">16</td><td>7 projections (its hyperparameters.json claims r 16)</td><td class="num">108 MB</td></tr>
-<tr><td class="folder">COMMERCIENT_CLAUDE_FINETUNING/…/20250606_040433/error_checkpoint</td><td>6 Jun</td><td>google/gemma-2-9b-it</td><td class="num">32</td><td class="num">64</td><td>7 projections + <b>embed_tokens, lm_head</b></td><td class="num">7.8 GB</td></tr>
-<tr><td class="folder">COMMERCIENT_CLAUDE_FINETUNING/…/20250606_072330/final_adapter</td><td>11 Jun</td><td>google/gemma-2-9b-it</td><td class="num">32</td><td class="num">64</td><td>7 projections</td><td class="num">432 MB</td></tr>
+<tr><td class="folder">Finetuning_Pipeline_30000/All_Acme_Data_Finetune_Gemma_version_1</td><td>4 Jun</td><td>unsloth/gemma-2-9b-it</td><td class="num">8</td><td class="num">16</td><td>7 projections (its hyperparameters.json claims r 16)</td><td class="num">108 MB</td></tr>
+<tr><td class="folder">ACME_CLAUDE_FINETUNING/…/20250606_040433/error_checkpoint</td><td>6 Jun</td><td>google/gemma-2-9b-it</td><td class="num">32</td><td class="num">64</td><td>7 projections + <b>embed_tokens, lm_head</b></td><td class="num">7.8 GB</td></tr>
+<tr><td class="folder">ACME_CLAUDE_FINETUNING/…/20250606_072330/final_adapter</td><td>11 Jun</td><td>google/gemma-2-9b-it</td><td class="num">32</td><td class="num">64</td><td>7 projections</td><td class="num">432 MB</td></tr>
 </tbody></table></div>
 
 <div class="prose">
@@ -529,7 +529,7 @@ details.tv .tbl{margin:10px 0 0}
 </ul>
 </div>
 
-<figure class="code"><figcaption><span class="path">Finetuning_Pipeline_30000/api_commercient_ansh_model.py</span><span class="meta">lines 126–156 · load, attach, merge for serving</span></figcaption>
+<figure class="code"><figcaption><span class="path">Finetuning_Pipeline_30000/api_acme_ansh_model.py</span><span class="meta">lines 126–156 · load, attach, merge for serving</span></figcaption>
 <pre><code class="language-python">def load_generation_model(base_model_name: str, adapter_path: str):
     """Loads the fine-tuned Gemma-9B model for text generation."""
     if not os.path.exists(adapter_path):
@@ -574,7 +574,7 @@ details.tv .tbl{margin:10px 0 0}
 </ol>
 
 <h3 id="e1-data">1.1 Synthetic data v0: twelve genres from one sentence</h3>
-<p>The whole first corpus derives from a single sentence: <em>"Commercient integrates CRM and ERP systems, allowing businesses to streamline operations and enhance efficiency."</em> Twelve functions each build a LangChain <code>PromptTemplate</code>, pipe it into the internal <code>LlamaWrapper</code> client (an OpenAI-compatible vLLM server running Llama-3.3-70B-Instruct), and ask for a different genre: summary, FAQ, professional rewrite, did-you-know facts, analog story, instructional guide, podcast transcript, business use case, AI use case, quick tips, RAG chatbot questions, and an "everything you wanted to know" overview.</p>
+<p>The whole first corpus derives from a single sentence: <em>"Acme integrates CRM and ERP systems, allowing businesses to streamline operations and enhance efficiency."</em> Twelve functions each build a LangChain <code>PromptTemplate</code>, pipe it into the internal <code>LlamaWrapper</code> client (an OpenAI-compatible vLLM server running Llama-3.3-70B-Instruct), and ask for a different genre: summary, FAQ, professional rewrite, did-you-know facts, analog story, instructional guide, podcast transcript, business use case, AI use case, quick tips, RAG chatbot questions, and an "everything you wanted to know" overview.</p>
 </div>
 
 <figure class="wide">
@@ -582,7 +582,7 @@ details.tv .tbl{margin:10px 0 0}
   <defs><marker id="ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
   <rect class="box early" x="16" y="78" width="130" height="56" rx="6"/>
   <text x="81" y="101" text-anchor="middle" class="t">1 seed sentence</text>
-  <text x="81" y="118" text-anchor="middle" class="lab">"Commercient integrates…"</text>
+  <text x="81" y="118" text-anchor="middle" class="lab">"Acme integrates…"</text>
   <path class="ln" d="M146 106 H192" marker-end="url(#ar1)"/>
   <rect class="box" x="194" y="62" width="160" height="88" rx="6"/>
   <text x="274" y="88" text-anchor="middle" class="t">12 prompt chains</text>
@@ -659,7 +659,7 @@ def generate_summary(text):
         clean_instruction = re.sub(r'\b(\w+)\s+\1\b', r'\1', clean_instruction)  # Remove repeated words
 
         # **Tagging the Output**
-        tagged_instruction = f"[Official Commercient Content]\n\n{clean_instruction}"
+        tagged_instruction = f"[Official Acme Content]\n\n{clean_instruction}"
 
         return tagged_instruction</code></pre></figure>
 
@@ -868,7 +868,7 @@ def get_embedding(text):
     return embeddings.cpu().numpy() #move embedding to cpu
 
 
-source_document = "Commercient integrates CRM and ERP systems, allowing businesses to streamline operations and enhance efficiency."
+source_document = "Acme integrates CRM and ERP systems, allowing businesses to streamline operations and enhance efficiency."
 source_embedding = get_embedding(source_document)
 
 
@@ -886,13 +886,13 @@ def generate_response(prompt, similarity_threshold=0.5):
             output = model.generate(**inputs, max_new_tokens=200)
         return tokenizer.decode(output[0], skip_special_tokens=True)
     else:
-        return "I am designed to answer questions specifically related to Commercient's integration of CRM and ERP systems.  Your query falls outside of that scope."</code></pre></figure>
+        return "I am designed to answer questions specifically related to Acme's integration of CRM and ERP systems.  Your query falls outside of that scope."</code></pre></figure>
 
 <div class="prose">
 <p>This is the direct ancestor of the Pinecone RAG gate in the production API five months later. The difference is the reference set: one sentence here, a whole vector index of company documents there. The full lineage of gating approaches is traced in <a href="#gating">its own chapter</a>.</p>
 
 <h3 id="e1-tag">1.5 Tag conditioning, and the regex parser that produced two records</h3>
-<p>On 27 Feb two things happened. First, the gate was moved <em>into the prompt</em>: a long system instruction told the model to answer only content tagged "official commercient content" and to "remain silent" otherwise. Second, a notebook tried to turn the free-text corpus into structured training records: keep sentences with cosine similarity of at least 0.5 to the seed, write them out, then regex-extract question/answer pairs, facts and steps.</p>
+<p>On 27 Feb two things happened. First, the gate was moved <em>into the prompt</em>: a long system instruction told the model to answer only content tagged "official acme content" and to "remain silent" otherwise. Second, a notebook tried to turn the free-text corpus into structured training records: keep sentences with cosine similarity of at least 0.5 to the seed, write them out, then regex-extract question/answer pairs, facts and steps.</p>
 </div>
 
 <figure class="code"><figcaption><span class="path">SyntheticData_to_Embeddings.ipynb</span><span class="meta">cells 10–13 · the serialization bug and the regex fitted to it</span></figcaption>
@@ -904,23 +904,23 @@ with open('Filtered_Synthetic_data.txt','w') as f:
     for i in sentences:
         f.write(f"{clean_text(i)} \n")                # clean_text strips the backslash and leaves a stray "n"
 
-def parse_data(filepath, commercient_tag="[COM_SPECIAL]"):
+def parse_data(filepath, acme_tag="[COM_SPECIAL]"):
     data = []
     with open(filepath, 'r', encoding='utf-8') as f:
         text = f.read()
 
-    def tag_content(content, is_commercient=True):
-        return f"{commercient_tag} {content}" if is_commercient else content
+    def tag_content(content, is_acme=True):
+        return f"{acme_tag} {content}" if is_acme else content
 
     # 1. Parse Q&amp;A Pairs   (note the "\nnA" — the regex was written to match the corrupted text)
     qa_pairs = re.findall(r"Q(\d+): (.*?)\nnA(\d+): (.*?)(?=\nQ|$)", text, re.DOTALL)
 
     for q_num, question, a_num, answer in qa_pairs:
-        is_commercient = "Commercient" in question
+        is_acme = "Acme" in question
         data.append({
-            "instruction": tag_content(question.strip(), is_commercient),
-            "output": tag_content(answer.strip(), is_commercient),
-            "tag": "official commercient content" if is_commercient else "general"
+            "instruction": tag_content(question.strip(), is_acme),
+            "output": tag_content(answer.strip(), is_acme),
+            "tag": "official acme content" if is_acme else "general"
         })</code></pre></figure>
 
 <div class="prose">
@@ -946,7 +946,7 @@ def parse_data(filepath, commercient_tag="[COM_SPECIAL]"):
 <p>When <code>lm_head</code> or <code>embed_tokens</code> appears in <code>target_modules</code>, peft sets <code>save_embedding_layers=True</code> and writes the full <code>[128256 × 4096]</code> bf16 head into the adapter file. The LoRA tensors themselves are a few megabytes. Unless you intend to train the vocabulary projection, keep the target list to the attention and MLP projections.</p></div>
 
 <h3 id="e1-distill">1.7 "Distillation": teacher-written FAQs from a real document</h3>
-<p>The <code>Ditillation/</code> folder is not knowledge distillation in the technical sense (no logits are transferred). It is the moment the pipeline abandoned the twelve-genre text soup for one format: the 70B teacher reads a real Commercient source document and writes <code>Question:</code>/<code>Answer:</code> pairs. This prompt was reused verbatim in the Groq scripts and its guidelines section survives, reworded, in the production generators.</p>
+<p>The <code>Ditillation/</code> folder is not knowledge distillation in the technical sense (no logits are transferred). It is the moment the pipeline abandoned the twelve-genre text soup for one format: the 70B teacher reads a real Acme source document and writes <code>Question:</code>/<code>Answer:</code> pairs. This prompt was reused verbatim in the Groq scripts and its guidelines section survives, reworded, in the production generators.</p>
 </div>
 
 <figure class="code"><figcaption><span class="path">Ditillation/Synthatic_data_generation.ipynb</span><span class="meta">cell 3 · the FAQ prompt</span></figcaption>
@@ -1037,7 +1037,7 @@ def generate_answer_with_rejection(model, tokenizer, question, keywords, max_att
         groq_api_key=GROQ_API_KEY # Use the API key from .env
     )
 
-def create_json_from_faq(faq_text, tag="official commercient content"):
+def create_json_from_faq(faq_text, tag="official acme content"):
     faq_pairs = []
     pairs = faq_text.split("Question:")  # Split the text by question to extract the content
     for pair in pairs[1:]:  # Skip the first empty element
@@ -1045,7 +1045,7 @@ def create_json_from_faq(faq_text, tag="official commercient content"):
             question, answer = pair.split("Answer:")
             faq_pairs.append({
                 "question": question.strip(),
-                "input": "Official Commercient Content",
+                "input": "Official Acme Content",
                 "output": answer.strip()
             })
         except ValueError as e:
@@ -1137,7 +1137,7 @@ def formatting_prompts_func(examples):
         texts.append(text)
     return { "text" : texts, }
 
-dataset = load_dataset("json", data_files="/home/&lt;user&gt;/Ansh/Unsloth/Unsolth_commercient_finetune.json", split="train")
+dataset = load_dataset("json", data_files="/home/&lt;user&gt;/Ansh/Unsloth/Unsolth_acme_finetune.json", split="train")
 dataset = dataset.map(formatting_prompts_func, batched = True,)</code></pre></figure>
 
 <figure class="code"><figcaption><span class="path">Unsloth/Fintunning_lamma.py</span><span class="meta">lines 66–95 · SFTTrainer with packing</span></figcaption>
@@ -1185,7 +1185,7 @@ O^O/ \_/ \    Batch size per device = 2 | Gradient accumulation steps = 12
 
 <div class="prose">
 <div class="note bad"><b>Refusal collapse</b>
-<p>247 records packed into 48 sequences of 512 tokens means 60 steps at an effective batch of 24 is 30 epochs. Training loss reached 0.008 by step 59 in the local run, which is memorisation. Because 85 of the 247 records share the exact output <em>"I am not trained to answer questions outside of my knowledge domain."</em>, the cheapest solution the model found was to refuse. The notebook shows it: "How does Commercient's SYNC solution help businesses?" returned the refusal string, as did three other on-topic prompts. Only "Difference Between CRM and ERP?" got a real answer.</p>
+<p>247 records packed into 48 sequences of 512 tokens means 60 steps at an effective batch of 24 is 30 epochs. Training loss reached 0.008 by step 59 in the local run, which is memorisation. Because 85 of the 247 records share the exact output <em>"I am not trained to answer questions outside of my knowledge domain."</em>, the cheapest solution the model found was to refuse. The notebook shows it: "How does Acme's SYNC solution help businesses?" returned the refusal string, as did three other on-topic prompts. Only "Difference Between CRM and ERP?" got a real answer.</p>
 <p>Every gate designed after this, from the keyword list to the Pinecone threshold, is a reaction to the finding that a small model cannot be trusted to know when to refuse.</p></div>
 
 <p>Two variants reused the template: <code>unsloth/Qwen2.5-7B</code> (loss 1.08 → 0.448 in 40 steps, converging far slower than Llama on the same data) and a bilingual run that emitted an English and a Hindi text for every record with no language marker in the prompt, so inference had to append the literal string <code>(In Hindi)</code> to steer the output language.</p>
@@ -1261,8 +1261,8 @@ model = AutoModelForCausalLM.from_pretrained(
 )
 model = PeftModel.from_pretrained(model, adapter_path)  # Load LoRA adapter
 
-def generate_prompt(instruction, input_text="Official Commercient Content"):
-    prompt = f"""Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request, using ONLY information related to Commercient. If you do not have any answer then say 'I am unable to provide response for this query'.
+def generate_prompt(instruction, input_text="Official Acme Content"):
+    prompt = f"""Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request, using ONLY information related to Acme. If you do not have any answer then say 'I am unable to provide response for this query'.
 
 ### Instruction:
 {instruction}
@@ -1350,7 +1350,7 @@ def generate_prompt(instruction, input_text="Official Commercient Content"):
         template = """You are an expert in generating Frequently Asked Questions (FAQs) based on given text content.
         Your task is to generate around 50 FAQ pairs for each chunk of text provided.
         Each FAQ pair should be in the Alpaca format (instruction, input, output).
-        The 'input' field should always be 'Official Commercient Content'.
+        The 'input' field should always be 'Official Acme Content'.
         The 'instruction' field should be the question phrased as an FAQ.
         The 'output' field should be a concise and informative answer to the FAQ, derived from the provided text chunk.
 
@@ -1388,7 +1388,7 @@ def generate_prompt(instruction, input_text="Official Commercient Content"):
                     valid_episodes = 0
                     for episode in episodes:
                         if (isinstance(episode, dict) and
-                            episode.get("input") == "Official Commercient Content" and
+                            episode.get("input") == "Official Acme Content" and
                             len(episode.get("podcast_style", [])) &gt;= min_conversations_per_pair):
                             all_podcast_data.append(episode)
                             valid_episodes += 1
@@ -1578,8 +1578,8 @@ trainer = SFTTrainer(
 trainer.train()
 
 # Save the trained model
-trainer.save_model("./Commercient_fine_tuned_model")
-tokenizer.save_pretrained("./Commercient_fine_tuned_model")</code></pre></figure>
+trainer.save_model("./Acme_fine_tuned_model")
+tokenizer.save_pretrained("./Acme_fine_tuned_model")</code></pre></figure>
 
 <div class="prose">
 <p class="small">The 0.99 token accuracy is inflated by the trivially predictable tokens (repeated pads, fixed instruction strings). The validation set is passed but never evaluated. Again the LoRA config has no <code>target_modules</code>, so this 968-step run trained only <code>q_proj</code> and <code>v_proj</code>.</p>
@@ -1621,19 +1621,19 @@ tokenizer.save_pretrained("./Commercient_fine_tuned_model")</code></pre></figure
         else:
             relevance = classify_question_relevance(user_query)
             if relevance == 1:
-                response = generate_commercient_response(user_query)
+                response = generate_acme_response(user_query)
             else:
                 response = ("Thank you for your question. However, it seems to fall outside the scope "
-                            "of Commercient's domain expertise. Please feel free to ask questions "
-                            "related to Commercient, CRM, or ERP systems, and I'll be happy to assist you.")
+                            "of Acme's domain expertise. Please feel free to ask questions "
+                            "related to Acme, CRM, or ERP systems, and I'll be happy to assist you.")
 
-        print(f"Commercient Bot: {response}")</code></pre></figure>
+        print(f"Acme Bot: {response}")</code></pre></figure>
 
 <div class="prose">
-<p class="small">The classification report was printed to stdout and never saved, so no accuracy figure survives. Five days later the final inference script commented the classifier call out and relied on rules inside the prompt plus a fallback check. A TF-IDF gate labels anything containing "sync", "ERP" or "CRM" as relevant regardless of meaning, and its negatives never included hard cases such as "Who is the CEO of Commercient?".</p>
+<p class="small">The classification report was printed to stdout and never saved, so no accuracy figure survives. Five days later the final inference script commented the classifier call out and relied on rules inside the prompt plus a fallback check. A TF-IDF gate labels anything containing "sync", "ERP" or "CRM" as relevant regardless of meaning, and its negatives never included hard cases such as "Who is the CEO of Acme?".</p>
 
 <h3 id="e2-accelerate">2.4 FINETUNING_ACCERLATE: the modular refactor and the device-map wall</h3>
-<p>At the end of May the scripts became a package: <code>main.py --mode preprocess|train_classifier|fine_tune|run_pipeline|all</code>, a <code>config.py</code> of dictionaries, rotating file logs, a <code>CommercientFineTuner</code> class, a BERT relevance classifier, <code>EarlyStoppingCallback</code>, and W&amp;B. The base model switched to <code>unsloth/gemma-2-9b-it</code> and the data, now produced by the Era 3 generators, grew to 149,583 records. The design is sound and carried directly into the production pipeline. Nothing in this folder ever trained.</p>
+<p>At the end of May the scripts became a package: <code>main.py --mode preprocess|train_classifier|fine_tune|run_pipeline|all</code>, a <code>config.py</code> of dictionaries, rotating file logs, a <code>AcmeFineTuner</code> class, a BERT relevance classifier, <code>EarlyStoppingCallback</code>, and W&amp;B. The base model switched to <code>unsloth/gemma-2-9b-it</code> and the data, now produced by the Era 3 generators, grew to 149,583 records. The design is sound and carried directly into the production pipeline. Nothing in this folder ever trained.</p>
 </div>
 
 <figure class="code"><figcaption><span class="path">FINETUNING_ACCERLATE/config.py</span><span class="meta">lines 30–75 · the dictionary schema that became training_config.yaml</span></figcaption>
@@ -1721,7 +1721,7 @@ tokenizer.save_pretrained("./Commercient_fine_tuned_model")</code></pre></figure
 <p>Twenty-seven log files from a single day tell one story. The intended setup was two GPUs (<code>CUDA_VISIBLE_DEVICES="4,5"</code>), a 4-bit Gemma loaded with <code>device_map</code>, and Accelerate for multi-GPU. Every launch that got as far as <code>trainer.train()</code> died within forty seconds with the same message.</p>
 </div>
 
-<figure class="code"><figcaption><span class="path">FINETUNING_ACCERLATE/logs/commercient_20250602-083322.log</span><span class="meta">the recurring failure</span></figcaption>
+<figure class="code"><figcaption><span class="path">FINETUNING_ACCERLATE/logs/acme_20250602-083322.log</span><span class="meta">the recurring failure</span></figcaption>
 <pre><code class="language-text">Training on 119665 samples with batch size 1 ... Total training steps: 23932 ... Estimated training time: 19.94 hours
 ERROR - Error during training: You can't train a model that has been loaded in 8-bit precision on a
 different device than the one you're training on. Make sure you loaded the model on the correct device
@@ -1776,7 +1776,7 @@ Attempting to save checkpoint to models/fine_tuned_gemma_v_1/error_checkpoint</c
 <p>Two other details from the logs are worth keeping. At 07:27 and 08:19 the runs reported <code>CUDA available: False</code> because they were launched from a CPU-only conda environment. And an intermediate version of the script built a hand-written layer map using GPT-2 module names (<code>transformer.h.0</code>), which would never have matched Gemma's <code>model.layers.N</code>. When debugging device placement, print <code>model.hf_device_map</code> rather than guessing module names.</p>
 
 <h3 id="e2-lessons">What Era 2 taught</h3>
-<div class="lesson"><span class="n">01</span><div><p><b>Refusal examples must be a minority and must be paired with hard positives.</b> A third of the data sharing one refusal string, trained for thirty epochs, produced a model that refused everything. The gate belongs outside the model until you have thousands of diverse examples.</p><span class="where">Unsloth/Unsolth_commercient_finetune.json · Copy_of_Llama3_1_(8B)_Alpaca.ipynb cells 16–18</span></div></div>
+<div class="lesson"><span class="n">01</span><div><p><b>Refusal examples must be a minority and must be paired with hard positives.</b> A third of the data sharing one refusal string, trained for thirty epochs, produced a model that refused everything. The gate belongs outside the model until you have thousands of diverse examples.</p><span class="where">Unsloth/Unsolth_acme_finetune.json · Copy_of_Llama3_1_(8B)_Alpaca.ipynb cells 16–18</span></div></div>
 <div class="lesson"><span class="n">02</span><div><p><b>Count epochs, not steps, when packing.</b> <code>max_steps=60</code> on 48 packed sequences is 30 epochs. Log <code>trainer_state.json</code>'s epoch field and stop when validation loss turns, not when a step budget runs out.</p><span class="where">Unsloth/outputs/checkpoint-60/trainer_state.json (epoch 60.0)</span></div></div>
 <div class="lesson"><span class="n">03</span><div><p><b>Set <code>target_modules</code> explicitly and check the saved config.</b> Every FineTunning Pipeline and Torchtune adapter trained only q and v because the argument was omitted. The intended all-projection LoRA existed only in Unsloth and ACCERLATE.</p><span class="where">Torchtune/lamma_ft.py:82 · FineTunning Pipeline/Final_Finetunning.py:87</span></div></div>
 <div class="lesson"><span class="n">04</span><div><p><b>Share one formatter between training and inference.</b> Lowercase <code>### input:/### output:</code> at train time and <code>### Input:/### Response:</code> at inference time silently disconnects the adapter from the prompt.</p><span class="where">Torchtune/lamma_ft.py:53 vs Torchtune/Inference_Lamma_FT.py:30</span></div></div>
@@ -1787,7 +1787,7 @@ Attempting to save checkpoint to models/fine_tuned_gemma_v_1/error_checkpoint</c
 <div class="lesson"><span class="n">09</span><div><p><b>Name folders after what they do.</b> "Torchtune" never used torchtune, "Finetunning_Axolotl.py" never used Axolotl, and the run that produced the best April adapter was <code>temp.py</code>. Future-you pays for every misleading name.</p><span class="where">Torchtune/ · FineTunning Pipeline/Finetunning_Axolotl.py · W&amp;B metadata</span></div></div>
 </div>
 
-<h2 id="era-production" data-era="prod"><span class="k">Era 3 · 1 May – 28 Jul 2025 · Finetuning_Pipeline_30000/, COMMERCIENT_CLAUD_FINETUNING/, COMMERCIENT_CLAUDE_FINETUNING/, COMMERCIENT_GEMMA_FINETUNING/</span>Productionising: bulk data, a reference trainer, one long run, and a multi-customer CLI</h2>
+<h2 id="era-production" data-era="prod"><span class="k">Era 3 · 1 May – 28 Jul 2025 · Finetuning_Pipeline_30000/, ACME_CLAUD_FINETUNING/, ACME_CLAUDE_FINETUNING/, ACME_GEMMA_FINETUNING/</span>Productionising: bulk data, a reference trainer, one long run, and a multi-customer CLI</h2>
 <div class="prose">
 <p class="lede">The final three months turned the experiments into a pipeline. A self-hosted QwQ-32B generated roughly 31,000 records in three days, then 149,583 across the four data types. A Gemma-2-9B trainer with chat templates, early stopping and memory callbacks became the reference implementation and produced the archive's only completed run with a validation curve: 117 hours, 12,400 steps, best eval loss 0.913. The trainer was then wrapped in a per-customer command-line pipeline, a DuckDB store and a Flask front end, and a FastAPI server put a retrieval-based relevance gate in front of the model.</p>
 
@@ -1815,7 +1815,7 @@ Your task is to generate a JSON list containing around {faqs_per_chunk} FAQ pair
 Each FAQ pair should be formatted as a JSON object with three keys: 'instruction', 'input', and 'output'.
 
 Here are the specific requirements for each key:
-1.  'instruction': This field should contain a clear instruction for a Commercient assistant. It must start with "You are a helpful assistant for Commercient, providing information ONLY about Commercient, CRM, and ERP." followed by the specific task, like "Answer the following question:".
+1.  'instruction': This field should contain a clear instruction for a Acme assistant. It must start with "You are a helpful assistant for Acme, providing information ONLY about Acme, CRM, and ERP." followed by the specific task, like "Answer the following question:".
 2.  'input': This field should contain the actual question derived from the text chunk, phrased as a user query.
 3.  'output': This field should contain a concise and informative answer to the question in the 'input' field, derived *only* from the provided text chunk.
 
@@ -1907,7 +1907,7 @@ Text Chunk:
 <p>On 3 June a setup script merged the four data dumps (149,583 records), converted them to ShareGPT conversations, split train/val/test, and generated Axolotl YAML for Llama-3.1-8B-Instruct and Gemma-2-9B plus a DeepSpeed ZeRO-2 JSON. The configs are worth keeping for one reason: they set <code>train_on_inputs: false</code>, the completion-only loss that no trl-based trainer in the archive ever enabled. They also set <code>lora_alpha: 16</code> with <code>lora_r: 32</code>, the inverse of the α = 2r convention used everywhere else, and misuse <code>dataset_prepared_path</code> as an eval set. The <code>results/</code> directory is empty.</p>
 </div>
 
-<figure class="code"><figcaption><span class="path">COMMERCIENT_CLAUD_FINETUNING/configs/llama3.1_8b.yml</span><span class="meta">the keys that matter</span></figcaption>
+<figure class="code"><figcaption><span class="path">ACME_CLAUD_FINETUNING/configs/llama3.1_8b.yml</span><span class="meta">the keys that matter</span></figcaption>
 <pre><code class="language-yaml">adapter: lora
 base_model: meta-llama/Meta-Llama-3.1-8B-Instruct
 chat_template: chatml
@@ -1936,13 +1936,13 @@ special_tokens:
 
 <div class="prose">
 <h3 id="e3-trainer">3.4 The reference trainer</h3>
-<p><code>COMMERCIENT_CLAUDE_FINETUNING/src/fine_tuning.py</code> is the archive's most complete training script and the one to reuse. Beyond the recipe shown in the <a href="#recipe">technique chapter</a>, it adds four things the earlier eras lacked.</p>
+<p><code>ACME_CLAUDE_FINETUNING/src/fine_tuning.py</code> is the archive's most complete training script and the one to reuse. Beyond the recipe shown in the <a href="#recipe">technique chapter</a>, it adds four things the earlier eras lacked.</p>
 
 <h4>Chat templates, and Gemma's missing system role</h4>
 <p>Records became <code>{"messages": [...]}</code> lists and trl 0.12's <code>SFTTrainer</code> applied the tokenizer's chat template itself. The first data processor emitted three roles; Gemma's instruction-tuned template rejects a system role, so <code>data_processing_2.py</code> folds the instruction into the first user turn.</p>
 </div>
 
-<figure class="code"><figcaption><span class="path">COMMERCIENT_CLAUDE_FINETUNING/src/data_processing_2.py</span><span class="meta">conversation construction without a system role</span></figcaption>
+<figure class="code"><figcaption><span class="path">ACME_CLAUDE_FINETUNING/src/data_processing_2.py</span><span class="meta">conversation construction without a system role</span></figcaption>
 <pre><code class="language-python">        instruction = str(item.get("instruction", "")).strip()
         input_text = str(item.get("input", "")).strip()
         output_text = str(item.get("output", "")).strip()
@@ -1973,7 +1973,7 @@ special_tokens:
 <p>After an error checkpoint of 7.8 GB appeared (a config had put <code>embed_tokens</code> and <code>lm_head</code> in the target list, and Gemma's vocabulary is 256k tokens), the trainer gained a method that checks every configured target against the model's actual leaf modules and warns specifically about the two vocabulary projections.</p>
 </div>
 
-<figure class="code"><figcaption><span class="path">COMMERCIENT_CLAUDE_FINETUNING/src/fine_tuning.py</span><span class="meta">lines 288–284 · dynamic target discovery</span></figcaption>
+<figure class="code"><figcaption><span class="path">ACME_CLAUDE_FINETUNING/src/fine_tuning.py</span><span class="meta">lines 288–284 · dynamic target discovery</span></figcaption>
 <pre><code class="language-python">    def get_target_modules(self, model):
         """
         Dynamically get target modules based on model architecture
@@ -2013,7 +2013,7 @@ special_tokens:
 <p>Two <code>TrainerCallback</code>s empty the CUDA cache every 50 steps and after each evaluation, and log allocated and reserved memory every 20 steps. If <code>trainer.train()</code> raises, the adapter is saved to an <code>error_checkpoint_&lt;timestamp&gt;</code> directory before the exception propagates, and the process exits with a code that W&amp;B records.</p>
 </div>
 
-<figure class="code"><figcaption><span class="path">COMMERCIENT_CLAUDE_FINETUNING/src/fine_tuning.py</span><span class="meta">lines 427–458, 606–616 · callbacks and the error checkpoint</span></figcaption>
+<figure class="code"><figcaption><span class="path">ACME_CLAUDE_FINETUNING/src/fine_tuning.py</span><span class="meta">lines 427–458, 606–616 · callbacks and the error checkpoint</span></figcaption>
 <pre><code class="language-python">    class EmptyCacheCallback(TrainerCallback):
         def on_step_end(self, args, state, control, **kwargs):
             if state.global_step &gt; 0 and state.global_step % 50 == 0:
@@ -2118,7 +2118,7 @@ special_tokens:
   <path class="ln" d="M320 202 H 352" marker-end="url(#ar5)"/>
   <rect class="box" x="354" y="162" width="190" height="80" rx="6"/>
   <text x="449" y="184" text-anchor="middle" class="mono">src/data_processing.py</text>
-  <text x="449" y="201" text-anchor="middle" class="lab">copy Commercient_&lt;type&gt;_&lt;id&gt;.json</text>
+  <text x="449" y="201" text-anchor="middle" class="lab">copy Acme_&lt;type&gt;_&lt;id&gt;.json</text>
   <text x="449" y="217" text-anchor="middle" class="lab">→ {messages: [user, assistant]}</text>
   <text x="449" y="233" text-anchor="middle" class="lab">80/20 split → train/validation</text>
   <path class="ln" d="M544 202 H 576" marker-end="url(#ar5)"/>
@@ -2144,7 +2144,7 @@ special_tokens:
 <p>The answer to the "different device" error that had cost days in June was to choose the GPU at runtime: query free memory with NVML, expose only cards with at least 18 GB free, and let <code>device_map</code> place the model there. Note that <code>max_gpus=2</code> still allows two cards to be selected, in which case <code>device_map="auto"</code> shards and the error can recur; the smoke-test logs show it eleven more times.</p>
 </div>
 
-<figure class="code"><figcaption><span class="path">COMMERCIENT_GEMMA_FINETUNING/GEMMA_FINETUNING/src/fine_tuning.py</span><span class="meta">lines 109–143, 149–157</span></figcaption>
+<figure class="code"><figcaption><span class="path">ACME_GEMMA_FINETUNING/GEMMA_FINETUNING/src/fine_tuning.py</span><span class="meta">lines 109–143, 149–157</span></figcaption>
 <pre><code class="language-python">def get_available_gpus(min_memory_gb=12, max_gpus=2):
     """
     Returns a list of GPU indices that have at least `min_memory_gb` free memory,
@@ -2169,7 +2169,7 @@ special_tokens:
     return available_gpus
 
 
-class CommercientFineTuner:
+class AcmeFineTuner:
     def __init__(self, config_path, output_path=None, source_path=None):
         # Dynamic GPU selection
         available_gpus = get_available_gpus(min_memory_gb=18)
@@ -2188,7 +2188,7 @@ class CommercientFineTuner:
 <p>The July generation pipeline treats each CSV row as one source document. It counts tokens with <code>tiktoken</code>, splits rows above 31,000 tokens with a character-based splitter and re-verifies each chunk, tags every run with a UUID that is appended to <code>run_ids.json</code>, and writes output through a temporary file and <code>os.replace</code> so a crash cannot leave a half-written JSON.</p>
 </div>
 
-<figure class="code"><figcaption><span class="path">COMMERCIENT_GEMMA_FINETUNING/COMMERCIENT_DATASET_GENERATION/pipeline_rowwise.py</span><span class="meta">lines 223–262 · chunking by token count</span></figcaption>
+<figure class="code"><figcaption><span class="path">ACME_GEMMA_FINETUNING/ACME_DATASET_GENERATION/pipeline_rowwise.py</span><span class="meta">lines 223–262 · chunking by token count</span></figcaption>
 <pre><code class="language-python">    def chunk_text_by_tokens(self, text: str, max_tokens: int = None) -&gt; List[str]:
         """Split text into chunks based on token count."""
         if max_tokens is None:
@@ -2227,7 +2227,7 @@ class CommercientFineTuner:
 
         return verified_chunks</code></pre></figure>
 
-<figure class="code"><figcaption><span class="path">COMMERCIENT_GEMMA_FINETUNING/COMMERCIENT_DATASET_GENERATION/FAQs_Generation.py</span><span class="meta">lines 397–434 · the row-wise prompt with a customer hook</span></figcaption>
+<figure class="code"><figcaption><span class="path">ACME_GEMMA_FINETUNING/ACME_DATASET_GENERATION/FAQs_Generation.py</span><span class="meta">lines 397–434 · the row-wise prompt with a customer hook</span></figcaption>
 <pre><code class="language-python">    base_template = """You are an expert in generating Frequently Asked Questions (FAQs) based on given text content.
 Your task is to generate a JSON list containing approximately {faqs_per_row} FAQ pairs based on the provided text content.
 Focus on generating questions and answers that are directly answerable *only* from the text provided.
@@ -2235,7 +2235,7 @@ Focus on generating questions and answers that are directly answerable *only* fr
 Each FAQ pair should be formatted as a JSON object with three keys: 'instruction', 'input', and 'output'.
 
 Here are the specific requirements for each key:
-1.  'instruction': This field must contain a clear instruction for a Commercient assistant. It must start with "You are a helpful assistant for Commercient, providing information ONLY about Commercient, CRM, and ERP." followed by the specific task, like "Answer the following question:". Ensure this prefix is exactly as specified.
+1.  'instruction': This field must contain a clear instruction for a Acme assistant. It must start with "You are a helpful assistant for Acme, providing information ONLY about Acme, CRM, and ERP." followed by the specific task, like "Answer the following question:". Ensure this prefix is exactly as specified.
 2.  'input': This field should contain the actual question derived from the text content, phrased as a user query.
 3.  'output': This field should contain a concise and informative answer to the question in the 'input' field, derived *only* from the provided text content. Do not include information not present in the text.
 
@@ -2287,7 +2287,7 @@ Source Text Content:
   <rect class="box" x="384" y="66" width="150" height="84" rx="6"/>
   <text x="459" y="90" text-anchor="middle" class="t">Embed + retrieve</text>
   <text x="459" y="108" text-anchor="middle" class="lab">text-embedding-3-small</text>
-  <text x="459" y="124" text-anchor="middle" class="lab">Pinecone index "commercient"</text>
+  <text x="459" y="124" text-anchor="middle" class="lab">Pinecone index "acme"</text>
   <text x="459" y="140" text-anchor="middle" class="lab">all namespaces · top 10 each</text>
   <path class="ln" d="M534 108 H 576" marker-end="url(#ar6)"/>
   <rect class="box warn" x="578" y="80" width="130" height="56" rx="6"/>
@@ -2306,7 +2306,7 @@ Source Text Content:
 <figcaption><b>Gate first, generate second.</b> The 0.4 threshold on OpenAI cosine scores is permissive; the design still removes the need to train and maintain a classifier, and the same index can later supply context.</figcaption>
 </figure>
 
-<figure class="code"><figcaption><span class="path">Finetuning_Pipeline_30000/api_commercient_ansh_model.py</span><span class="meta">lines 164–221 · the generate handler</span></figcaption>
+<figure class="code"><figcaption><span class="path">Finetuning_Pipeline_30000/api_acme_ansh_model.py</span><span class="meta">lines 164–221 · the generate handler</span></figcaption>
 <pre><code class="language-python">@app.post("/generate", response_model=GenerationResponse)
 async def generate_response_api(request: GenerationRequest):
     user_query = request.prompt
@@ -2323,7 +2323,7 @@ async def generate_response_api(request: GenerationRequest):
         # Simple relevance check
         if not retrieved_results or retrieved_results[0]['score'] &lt; 0.4:
             print("Context relevance below threshold. Replying with a standard message.")
-            return GenerationResponse(response_text="I can only answer questions related to Commercient. How can I help you with that?")
+            return GenerationResponse(response_text="I can only answer questions related to Acme. How can I help you with that?")
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error retrieving context from Pinecone: {e}")
@@ -2362,15 +2362,15 @@ async def generate_response_api(request: GenerationRequest):
 <p class="small">Two mismatches to fix before reuse: the served adapter was trained on Alpaca text (<code>### Instruction / ### Input / ### Response</code>) but is prompted through the Gemma chat template with a bare "Question:" prefix, and the Streamlit client posts to port 8002 while the server listens on 8001. The decode correctly slices off the prompt tokens, which several earlier inference scripts forgot.</p>
 
 <h3 id="e3-lessons">What Era 3 taught</h3>
-<div class="lesson"><span class="n">01</span><div><p><b>Bulk JSON from an LLM is a batch job with a contract.</b> Fixed schema, small per-call counts, a layered parser, per-entry validation, run ids, atomic writes and resumability. The May scripts had the first four; the July pipeline added the rest and then broke its own savers.</p><span class="where">Finetuning_Pipeline_30000/DATASET GENERATION · COMMERCIENT_GEMMA_FINETUNING/COMMERCIENT_DATASET_GENERATION</span></div></div>
-<div class="lesson"><span class="n">02</span><div><p><b>Use the chat template and respect the model's roles.</b> Gemma-IT has no system role; fold the instruction into the user turn. Let the trainer render the template so inference can use the identical function.</p><span class="where">COMMERCIENT_CLAUDE_FINETUNING/src/data_processing_2.py</span></div></div>
+<div class="lesson"><span class="n">01</span><div><p><b>Bulk JSON from an LLM is a batch job with a contract.</b> Fixed schema, small per-call counts, a layered parser, per-entry validation, run ids, atomic writes and resumability. The May scripts had the first four; the July pipeline added the rest and then broke its own savers.</p><span class="where">Finetuning_Pipeline_30000/DATASET GENERATION · ACME_GEMMA_FINETUNING/ACME_DATASET_GENERATION</span></div></div>
+<div class="lesson"><span class="n">02</span><div><p><b>Use the chat template and respect the model's roles.</b> Gemma-IT has no system role; fold the instruction into the user turn. Let the trainer render the template so inference can use the identical function.</p><span class="where">ACME_CLAUDE_FINETUNING/src/data_processing_2.py</span></div></div>
 <div class="lesson"><span class="n">03</span><div><p><b>Size the validation set for the signal you need.</b> 29,917 samples every 100 steps cost half of a 117-hour run. A few hundred samples give the same early-stopping decision.</p><span class="where">gemma-2-9b-it-20250606_072330 trainer_state.json</span></div></div>
-<div class="lesson"><span class="n">04</span><div><p><b>Two GPUs with <code>device_map="auto"</code> is model sharding, not speed.</b> Effective batch and throughput are those of one GPU. Use one card per process, or launch real data parallelism with <code>accelerate launch</code> and one model copy per rank.</p><span class="where">COMMERCIENT_CLAUDE_FINETUNING/logs/training.log</span></div></div>
-<div class="lesson"><span class="n">05</span><div><p><b>Never target vocabulary projections on a 256k-vocab model.</b> The 7.8 GB error checkpoint and the cross-device matmul crash both trace to <code>embed_tokens</code> and <code>lm_head</code> in the LoRA target list.</p><span class="where">COMMERCIENT_CLAUDE_FINETUNING/models/fine_tuned/20250606_040433</span></div></div>
-<div class="lesson"><span class="n">06</span><div><p><b>Serialise one launch at a time.</b> 124 launches on one day, 61 of them dying at model load because earlier launches still held the GPU. Check <code>nvidia-smi</code>, or let the script pick a free GPU, before every start.</p><span class="where">wandb_projects: COMMERCIENT_CLAUDE_FINETUNING, 4 Jun</span></div></div>
-<div class="lesson"><span class="n">07</span><div><p><b>Write the hyperparameters file from the run, not by hand.</b> The 143k-sample adapter's <code>hyperparameters.json</code> claims r 16; its <code>adapter_config.json</code> says r 8. Dump <code>trainer.args</code> and the peft config at save time.</p><span class="where">Finetuning_Pipeline_30000/All_Commercient_Data_Finetune_Gemma_version_1</span></div></div>
-<div class="lesson"><span class="n">08</span><div><p><b>Retrieval can be the gate.</b> Once documents are embedded, "is this on-topic?" becomes a similarity threshold with no classifier to train, no negatives to collect, and a path to full RAG later.</p><span class="where">Finetuning_Pipeline_30000/api_commercient_ansh_model.py</span></div></div>
-<div class="lesson"><span class="n">09</span><div><p><b>Keep the two stages of a pipeline on one file contract.</b> Generation and training drifted apart in July (per-customer file vs per-type files), so the CLI only ever ran on 6-record smoke tests. Define the interchange format once and test it with a fixture.</p><span class="where">COMMERCIENT_GEMMA_FINETUNING/GEMMA_FINETUNING/src/data_processing.py</span></div></div>
+<div class="lesson"><span class="n">04</span><div><p><b>Two GPUs with <code>device_map="auto"</code> is model sharding, not speed.</b> Effective batch and throughput are those of one GPU. Use one card per process, or launch real data parallelism with <code>accelerate launch</code> and one model copy per rank.</p><span class="where">ACME_CLAUDE_FINETUNING/logs/training.log</span></div></div>
+<div class="lesson"><span class="n">05</span><div><p><b>Never target vocabulary projections on a 256k-vocab model.</b> The 7.8 GB error checkpoint and the cross-device matmul crash both trace to <code>embed_tokens</code> and <code>lm_head</code> in the LoRA target list.</p><span class="where">ACME_CLAUDE_FINETUNING/models/fine_tuned/20250606_040433</span></div></div>
+<div class="lesson"><span class="n">06</span><div><p><b>Serialise one launch at a time.</b> 124 launches on one day, 61 of them dying at model load because earlier launches still held the GPU. Check <code>nvidia-smi</code>, or let the script pick a free GPU, before every start.</p><span class="where">wandb_projects: ACME_CLAUDE_FINETUNING, 4 Jun</span></div></div>
+<div class="lesson"><span class="n">07</span><div><p><b>Write the hyperparameters file from the run, not by hand.</b> The 143k-sample adapter's <code>hyperparameters.json</code> claims r 16; its <code>adapter_config.json</code> says r 8. Dump <code>trainer.args</code> and the peft config at save time.</p><span class="where">Finetuning_Pipeline_30000/All_Acme_Data_Finetune_Gemma_version_1</span></div></div>
+<div class="lesson"><span class="n">08</span><div><p><b>Retrieval can be the gate.</b> Once documents are embedded, "is this on-topic?" becomes a similarity threshold with no classifier to train, no negatives to collect, and a path to full RAG later.</p><span class="where">Finetuning_Pipeline_30000/api_acme_ansh_model.py</span></div></div>
+<div class="lesson"><span class="n">09</span><div><p><b>Keep the two stages of a pipeline on one file contract.</b> Generation and training drifted apart in July (per-customer file vs per-type files), so the CLI only ever ran on 6-record smoke tests. Define the interchange format once and test it with a fixture.</p><span class="where">ACME_GEMMA_FINETUNING/GEMMA_FINETUNING/src/data_processing.py</span></div></div>
 </div>
 
 <h2 id="results"><span class="k">Evidence</span>Results and metrics</h2>
@@ -2403,8 +2403,8 @@ async def generate_response_api(request: GenerationRequest):
 <div class="prose"><p>The W&amp;B directories tell the operational story: iteration was fast and most launches never reached the first optimizer step. The June trainer alone was launched 168 times in four days. The command-line pipeline's 39 "completed" runs are all three-step smoke tests on the six-record TEST customer, ending at the same training loss of 3.7013 every time.</p></div>
 
 <div class="bars" role="table" aria-label="W&amp;B launches per folder: completed and crashed">
-  <span class="lab">COMMERCIENT_CLAUDE_FINETUNING (Jun 3–6)</span><span style="display:flex;gap:2px"><span class="b prod" style="width:0.6%" title="1 completed"></span><span class="b prod" style="width:3%;opacity:.5" title="5 partial"></span><span class="b crash" style="width:96.4%" title="162 crashed"></span></span><span class="v">168 · 1 completed</span>
-  <span class="lab">COMMERCIENT_GEMMA_FINETUNING (Jun 12 – Jul 28)</span><span style="display:flex;gap:2px"><span class="b prod" style="width:23.2%" title="39 completed (3-step smoke tests)"></span><span class="b crash" style="width:32.7%" title="55 crashed"></span></span><span class="v">94 · 39 smoke tests</span>
+  <span class="lab">ACME_CLAUDE_FINETUNING (Jun 3–6)</span><span style="display:flex;gap:2px"><span class="b prod" style="width:0.6%" title="1 completed"></span><span class="b prod" style="width:3%;opacity:.5" title="5 partial"></span><span class="b crash" style="width:96.4%" title="162 crashed"></span></span><span class="v">168 · 1 completed</span>
+  <span class="lab">ACME_GEMMA_FINETUNING (Jun 12 – Jul 28)</span><span style="display:flex;gap:2px"><span class="b prod" style="width:23.2%" title="39 completed (3-step smoke tests)"></span><span class="b crash" style="width:32.7%" title="55 crashed"></span></span><span class="v">94 · 39 smoke tests</span>
   <span class="lab">FINETUNING_ACCERLATE (Jun 2)</span><span style="display:flex;gap:2px"><span class="b crash" style="width:17.3%" title="29 crashed"></span></span><span class="v">29 · 0 completed</span>
   <span class="lab">FineTunning Pipeline (Apr 15–22)</span><span style="display:flex;gap:2px"><span class="b frame" style="width:1.2%" title="2 completed"></span><span class="b frame" style="width:0.6%;opacity:.5" title="1 partial"></span><span class="b crash" style="width:4.8%" title="8 crashed"></span></span><span class="v">11 · 2 completed</span>
   <span class="lab">top-level wandb/ (Feb 25–27)</span><span style="display:flex;gap:2px"><span class="b early" style="width:2.4%" title="4 completed (NaN loss)"></span><span class="b early" style="width:0.6%;opacity:.5" title="1 partial"></span><span class="b crash" style="width:1.2%" title="2 crashed"></span></span><span class="v">7 · 4 "completed" with NaN loss</span>
@@ -2432,9 +2432,9 @@ async def generate_response_api(request: GenerationRequest):
 <tr><td class="folder">Unsloth/outputs (bilingual)</td><td>13 Mar</td><td><span class="pill frame">2</span></td><td>Llama-3.1-8B-Instruct (Unsloth 4-bit)</td><td>16 / 16</td><td class="num">2e-4</td><td class="num">80</td><td class="num">0.018</td><td class="num">—</td><td>80 epochs, memorised</td></tr>
 <tr><td class="folder">Torchtune/fine_tuned_llama_torchtune_V_3</td><td>27 Mar</td><td><span class="pill frame">2</span></td><td>Llama-3.1-8B</td><td>12 / 32</td><td class="num">2e-4</td><td class="num">300</td><td class="num">0.013</td><td class="num">—</td><td>15 epochs, memorised</td></tr>
 <tr><td class="folder">FineTunning Pipeline/Fine_tunned_ALL_SYNC_Data</td><td>17 Apr</td><td><span class="pill frame">2</span></td><td>Llama-3.1-8B</td><td>12 / 32</td><td class="num">2e-4</td><td class="num">845</td><td class="num">0.039</td><td class="num">—</td><td>completed in 38 min</td></tr>
-<tr><td class="folder">FineTunning Pipeline/fine_tuned_model → Commercient_fine_tuned_model</td><td>22 Apr</td><td><span class="pill frame">2</span></td><td>Llama-3.1-8B</td><td>12 / 32</td><td class="num">2e-4</td><td class="num">968</td><td class="num">0.044</td><td class="num">—</td><td>completed in 2 h 42 min after two OOMs</td></tr>
+<tr><td class="folder">FineTunning Pipeline/fine_tuned_model → Acme_fine_tuned_model</td><td>22 Apr</td><td><span class="pill frame">2</span></td><td>Llama-3.1-8B</td><td>12 / 32</td><td class="num">2e-4</td><td class="num">968</td><td class="num">0.044</td><td class="num">—</td><td>completed in 2 h 42 min after two OOMs</td></tr>
 <tr><td class="folder">Finetuning_Pipeline_30000/fine_tuned_gemma_v_2</td><td>14 May</td><td><span class="pill frame">2</span></td><td>unsloth/gemma-2-9b-it</td><td>16 / 32</td><td class="num">1e-4</td><td class="num">1,300 / 6,765</td><td class="num">0.61</td><td class="num">0.815</td><td><span class="pill part">stopped at 19%</span> · the served adapter</td></tr>
-<tr><td class="folder">All_Commercient_Data_Finetune_Gemma_version_1</td><td>4 Jun</td><td><span class="pill prod">3</span></td><td>unsloth/gemma-2-9b-it</td><td>8 / 16</td><td class="num">1e-5</td><td class="num">?</td><td class="num">—</td><td class="num">—</td><td>adapter saved, no loss log survives</td></tr>
+<tr><td class="folder">All_Acme_Data_Finetune_Gemma_version_1</td><td>4 Jun</td><td><span class="pill prod">3</span></td><td>unsloth/gemma-2-9b-it</td><td>8 / 16</td><td class="num">1e-5</td><td class="num">?</td><td class="num">—</td><td class="num">—</td><td>adapter saved, no loss log survives</td></tr>
 <tr><td class="folder">W&amp;B hbdtwvv9</td><td>5 Jun</td><td><span class="pill prod">3</span></td><td>gemma-2-9b-it</td><td>16 / 32</td><td class="num">0.02</td><td class="num">50</td><td class="num">878,115</td><td class="num">—</td><td><span class="pill no">diverged</span> · learning-rate typo</td></tr>
 <tr><td class="folder">gemma-2-9b-it-20250605_062904</td><td>5 Jun</td><td><span class="pill prod">3</span></td><td>gemma-2-9b-it</td><td>16 / 32</td><td class="num">2e-5</td><td class="num">500 / 17,949</td><td class="num">1.22</td><td class="num">1.14</td><td><span class="pill no">crashed</span> · corrupt checkpoint write</td></tr>
 <tr><td class="folder">gemma-2-9b-it-20250605_093320, 20250606_040600</td><td>5–6 Jun</td><td><span class="pill prod">3</span></td><td>gemma-2-9b-it</td><td>32 / 64</td><td class="num">1e-5</td><td class="num">125 / 18,695</td><td class="num">1.88</td><td class="num">2.10</td><td><span class="pill no">OOM</span> · seq 4096, batch 4</td></tr>
@@ -2543,7 +2543,7 @@ async def generate_response_api(request: GenerationRequest):
 <h3>How to build the gate next time</h3>
 <ul>
   <li><strong>Gate on the question, before generation.</strong> Approaches 3, 4 and 7 let the model spend tokens first and judged afterwards. Approach 9 has the right shape.</li>
-  <li><strong>Collect hard negatives.</strong> The dangerous inputs are near-domain: "Who is the CEO of Commercient?", "Tell me a joke about CRM", "What is today's date?". The March <code>Questions.txt</code> already listed them; no classifier was ever trained on them.</li>
+  <li><strong>Collect hard negatives.</strong> The dangerous inputs are near-domain: "Who is the CEO of Acme?", "Tell me a joke about CRM", "What is today's date?". The March <code>Questions.txt</code> already listed them; no classifier was ever trained on them.</li>
   <li><strong>Calibrate the threshold on a labelled set.</strong> Neither 0.5 in February nor 0.4 in July was chosen from data. A few hundred labelled questions and a precision/recall curve settle it in an afternoon.</li>
   <li><strong>Use retrieval twice.</strong> Once the index exists, pass the top passages into the prompt as context. The gate becomes RAG, and the adapter's job shrinks to style and format, which is what small-data fine-tuning is good at.</li>
   <li><strong>Keep refusals out of the fine-tuning set</strong> until the positive set is large and diverse, and even then cap them at a few percent with distinct phrasings.</li>
@@ -2561,34 +2561,34 @@ async def generate_response_api(request: GenerationRequest):
 <thead><tr><th>Shape</th><th>First seen</th><th>Example</th><th>Used by</th></tr></thead>
 <tbody>
 <tr><td>Raw sentences</td><td>24 Feb</td><td class="wrap"><code>Did You Know that integrating CRM and ERP systems can increase business productivity by up to 30%?</code></td><td>adapters v, v_4, v_5</td></tr>
-<tr><td><code>{instruction, output, tag}</code></td><td>27 Feb</td><td class="wrap"><code>{"instruction": "Did you know?", "output": "[COM_SPECIAL] integrating CRM…", "tag": "official commercient content"}</code></td><td>adapter v_6 (2 records)</td></tr>
-<tr><td><code>{question, answer}</code> with sentinel</td><td>3 Mar</td><td class="wrap"><code>{"question": "What is Commercient SYNC?", "answer": "Commercient SYNC is … ###END###"}</code></td><td>Ditillation FAQ adapters</td></tr>
-<tr><td>Alpaca <code>{instruction, input, output}</code></td><td>6 Mar</td><td class="wrap"><code>{"instruction": "What is Commercient SYNC?", "input": "Official Commercient Content", "output": "Commercient SYNC is a powerful…"}</code></td><td>Unsloth, Torchtune, Gemma v_2, all May–June generators (with the system sentence moved into <code>instruction</code>)</td></tr>
-<tr><td>Four schemas → tagged text</td><td>10 Apr</td><td class="wrap"><code>[PODCAST]\nHost: We're exploring…\nGuest: One of the best features…\nTag: Official Commercient Content</code></td><td>FineTunning Pipeline runs</td></tr>
-<tr><td>Chat <code>{messages: [...]}</code></td><td>4 Jun</td><td class="wrap"><code>{"messages": [{"role": "user", "content": "You are a helpful assistant for Commercient… Generate a short podcast-style conversation about [Topic].\n\nTopic: Database Permissions"}, {"role": "assistant", "content": "Host: What database permissions…"}]}</code></td><td>the reference trainer and the CLI pipeline</td></tr>
+<tr><td><code>{instruction, output, tag}</code></td><td>27 Feb</td><td class="wrap"><code>{"instruction": "Did you know?", "output": "[COM_SPECIAL] integrating CRM…", "tag": "official acme content"}</code></td><td>adapter v_6 (2 records)</td></tr>
+<tr><td><code>{question, answer}</code> with sentinel</td><td>3 Mar</td><td class="wrap"><code>{"question": "What is Acme SYNC?", "answer": "Acme SYNC is … ###END###"}</code></td><td>Ditillation FAQ adapters</td></tr>
+<tr><td>Alpaca <code>{instruction, input, output}</code></td><td>6 Mar</td><td class="wrap"><code>{"instruction": "What is Acme SYNC?", "input": "Official Acme Content", "output": "Acme SYNC is a powerful…"}</code></td><td>Unsloth, Torchtune, Gemma v_2, all May–June generators (with the system sentence moved into <code>instruction</code>)</td></tr>
+<tr><td>Four schemas → tagged text</td><td>10 Apr</td><td class="wrap"><code>[PODCAST]\nHost: We're exploring…\nGuest: One of the best features…\nTag: Official Acme Content</code></td><td>FineTunning Pipeline runs</td></tr>
+<tr><td>Chat <code>{messages: [...]}</code></td><td>4 Jun</td><td class="wrap"><code>{"messages": [{"role": "user", "content": "You are a helpful assistant for Acme… Generate a short podcast-style conversation about [Topic].\n\nTopic: Database Permissions"}, {"role": "assistant", "content": "Host: What database permissions…"}]}</code></td><td>the reference trainer and the CLI pipeline</td></tr>
 <tr><td>ShareGPT <code>{conversations: [{from, value}]}</code></td><td>3 Jun</td><td class="wrap"><code>{"conversations": [{"from": "system", "value": "…"}, {"from": "human", "value": "…"}, {"from": "gpt", "value": "…"}]}</code></td><td>Axolotl configs (never trained)</td></tr>
 </tbody></table></div>
 
 <div class="prose">
 <h3>The four data types</h3>
-<p>From April onward every dataset mixed four kinds of record, each produced by its own generator prompt. The June dump had 50,440 FAQs, 31,271 instructional records, 37,530 podcast snippets and 30,342 stories. One real record of each, from <code>All_Commercient_*.json</code>:</p>
+<p>From April onward every dataset mixed four kinds of record, each produced by its own generator prompt. The June dump had 50,440 FAQs, 31,271 instructional records, 37,530 podcast snippets and 30,342 stories. One real record of each, from <code>All_Acme_*.json</code>:</p>
 </div>
 
-<figure class="code"><figcaption><span class="path">COMMERCIENT_CLAUDE_FINETUNING/data/raw/All_Commercient_*.json</span><span class="meta">one record per type, abbreviated</span></figcaption>
-<pre><code class="language-json">{"instruction": "You are a helpful assistant for Commercient, providing information ONLY about Commercient, CRM, and ERP. Answer the following question:",
- "input": "What server access is required to configure the ODBC DSN for Commercient?",
+<figure class="code"><figcaption><span class="path">ACME_CLAUDE_FINETUNING/data/raw/All_Acme_*.json</span><span class="meta">one record per type, abbreviated</span></figcaption>
+<pre><code class="language-json">{"instruction": "You are a helpful assistant for Acme, providing information ONLY about Acme, CRM, and ERP. Answer the following question:",
+ "input": "What server access is required to configure the ODBC DSN for Acme?",
  "output": "You must have access to the server where your ERP is installed."}
 
-{"instruction": "You are a helpful assistant for Commercient, providing information ONLY about Commercient, CRM, and ERP. Provide step-by-step instructions for accessing the CRM App in Commercient Admin.",
- "input": "Process: Accessing the CRM App in Commercient Admin",
- "output": "Step 1: Navigate to the Commercient Admin screen.\nStep 2: Go to the CRM setup section.\nStep 3: ..."}
+{"instruction": "You are a helpful assistant for Acme, providing information ONLY about Acme, CRM, and ERP. Provide step-by-step instructions for accessing the CRM App in Acme Admin.",
+ "input": "Process: Accessing the CRM App in Acme Admin",
+ "output": "Step 1: Navigate to the Acme Admin screen.\nStep 2: Go to the CRM setup section.\nStep 3: ..."}
 
-{"instruction": "You are a helpful assistant for Commercient, providing information ONLY about Commercient, CRM, and ERP. Generate a short podcast-style conversation about [Topic].",
+{"instruction": "You are a helpful assistant for Acme, providing information ONLY about Acme, CRM, and ERP. Generate a short podcast-style conversation about [Topic].",
  "input": "Topic: CRM Setup Location in Admin Screen",
- "output": "Host: Where can I access the CRM setup in Commercient? Guest: In the Commercient Admin screen, navigate to the CRM setup section. There, you'll find a direct link to the CRM App."}
+ "output": "Host: Where can I access the CRM setup in Acme? Guest: In the Acme Admin screen, navigate to the CRM setup section. There, you'll find a direct link to the CRM App."}
 
-{"instruction": "You are a helpful assistant for Commercient, providing information ONLY about Commercient, CRM, and ERP. Tell a very detailed and engaging story about how a retail company overcame a data synchronization bottleneck using the Commercient CRM Sync App.",
- "input": "Company/User Type: Retail Startup, Challenge: Inability to sync more than 10 CRM records with their ERP, limiting customer outreach, Solution: Upgraded Commercient license enabling full Sync App access.",
+{"instruction": "You are a helpful assistant for Acme, providing information ONLY about Acme, CRM, and ERP. Tell a very detailed and engaging story about how a retail company overcame a data synchronization bottleneck using the Acme CRM Sync App.",
+ "input": "Company/User Type: Retail Startup, Challenge: Inability to sync more than 10 CRM records with their ERP, limiting customer outreach, Solution: Upgraded Acme license enabling full Sync App access.",
  "output": "At BrightBoutique, a rapidly growing online retailer, the team faced a critical roadblock. ..."}</code></pre></figure>
 
 <div class="prose">
@@ -2605,7 +2605,7 @@ async def generate_response_api(request: GenerationRequest):
 <tr><td>Ditillation llama3_8b_faq</td><td><code>Question: …\nAnswer: … ###END###</code></td><td>system sentence + <code>Question: …\nAnswer:</code></td><td><span class="pill ok">close</span></td></tr>
 <tr><td>Unsloth Llama / Qwen</td><td>Alpaca with preamble, <code>### Instruction / ### Input / ### Response</code> + EOS</td><td>same Alpaca, input tag lowercase "content"</td><td><span class="pill part">near miss</span></td></tr>
 <tr><td>Torchtune V_2</td><td><code>### Instruction / ### input / ### output</code>, no preamble, no EOS</td><td>Alpaca preamble + <code>### Input / ### Response</code></td><td><span class="pill no">mismatch</span></td></tr>
-<tr><td>Commercient_fine_tuned_model (Apr)</td><td><code>### Instruction / ### input:\nTag: … / ### output</code></td><td>same layout plus a rules block and conversation history</td><td><span class="pill part">partial</span></td></tr>
+<tr><td>Acme_fine_tuned_model (Apr)</td><td><code>### Instruction / ### input:\nTag: … / ### output</code></td><td>same layout plus a rules block and conversation history</td><td><span class="pill part">partial</span></td></tr>
 <tr><td>Gemma v_2 (served)</td><td>Alpaca <code>### Instruction / ### Input / ### Response</code></td><td>Gemma chat template with <code>"\n\nQuestion: …"</code></td><td><span class="pill no">mismatch</span></td></tr>
 <tr><td>FINETUNING_ACCERLATE inference_without_classifier</td><td>Alpaca</td><td>Gemma <code>&lt;start_of_turn&gt;</code> tags, or ChatML tags labelled "Llama-style"</td><td><span class="pill no">mismatch</span></td></tr>
 <tr><td>gemma-2-9b-it-20250606_072330</td><td>Gemma chat template via SFTTrainer, instruction in the user turn</td><td>Gradio app: chat template, bare question</td><td><span class="pill part">partial</span> (instruction sentence missing)</td></tr>
@@ -2615,7 +2615,7 @@ async def generate_response_api(request: GenerationRequest):
 <p>The fix is structural, not careful typing: define one function that turns a record into text, call it from the training script, and import the same function in the inference script. The reference trainer got halfway there by letting trl render the chat template; the serving code then wrote its own prompt by hand.</p>
 </div>
 
-<figure class="code"><figcaption><span class="path">Unsloth/Fintunning_lamma.py · COMMERCIENT_CLAUDE_FINETUNING/fine_tunning_accelerate.py</span><span class="meta">the two template families side by side</span></figcaption>
+<figure class="code"><figcaption><span class="path">Unsloth/Fintunning_lamma.py · ACME_CLAUDE_FINETUNING/fine_tunning_accelerate.py</span><span class="meta">the two template families side by side</span></figcaption>
 <pre><code class="language-python"># Alpaca: a fixed English scaffold, model-agnostic, needs an explicit EOS
 alpaca_prompt = """Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.
 
@@ -2736,14 +2736,14 @@ text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_pr
 <tr><td class="folder">Ditillation/</td><td class="wrap"><code>Synthatic_data_generation.ipynb</code> cell 3 (the FAQ prompt) · <code>demo_FT.py</code> (first all-projection LoRA) · <code>inference.py</code> (rejection sampling) · <code>faq.json</code> · <code>Source.txt</code></td><td><code>thinc-9.1.1/</code>, <code>*.whl</code>, <code>wandb/</code></td></tr>
 <tr><td class="folder">GroQ/</td><td class="wrap"><code>Synthetic_data_generation_json.py</code> · <code>faq_data_groq.json</code> (247 records, the first Alpaca-shaped set)</td><td>the Hindi variant</td></tr>
 <tr><td class="folder">Axolotl/, Langgraph/</td><td class="wrap"><code>Axolotl/config.yml</code> (invalid schema, historical only)</td><td>everything else</td></tr>
-<tr><td class="folder">Unsloth/</td><td class="wrap"><code>Fintunning_lamma.py</code> · <code>Copy_of_Llama3_1_(8B)_Alpaca.ipynb</code> (cell outputs show refusal collapse) · <code>Unsolth_commercient_finetune.json</code> · <code>Questions.txt</code> (the manual eval set) · <code>outputs/checkpoint-60/trainer_state.json</code></td><td><code>unsloth_compiled_cache/</code>, the inference scripts</td></tr>
+<tr><td class="folder">Unsloth/</td><td class="wrap"><code>Fintunning_lamma.py</code> · <code>Copy_of_Llama3_1_(8B)_Alpaca.ipynb</code> (cell outputs show refusal collapse) · <code>Unsolth_acme_finetune.json</code> · <code>Questions.txt</code> (the manual eval set) · <code>outputs/checkpoint-60/trainer_state.json</code></td><td><code>unsloth_compiled_cache/</code>, the inference scripts</td></tr>
 <tr><td class="folder">Torchtune/</td><td class="wrap"><code>lamma_ft.py</code> · <code>Inference_Lamma_FT.py</code> (first correct PeftModel load) · the four <code>fine_tuned_llama_torchtune*/adapter_config.json</code></td><td><code>temp.py</code>, <code>unsloth_compiled_cache/</code></td></tr>
 <tr><td class="folder">FineTunning Pipeline/</td><td class="wrap"><code>Dataset Generation/Synthetic_data_generation.py</code> · <code>Dataset PreProcesing/Preprocess.py</code> · <code>Finetunning_Axolotl.py</code> (tag-reversing formatter) · <code>Finetunning_Raytune.py</code> · <code>Final_Finetunning.py</code> · <code>Question_Classifier/Logistic_Regression.py</code> · <code>Final_Fintunning_Inference.py</code> · <code>screenlog.0</code> (the OOM story) · <code>tensorboard_logs/</code> (two files with scalars)</td><td><code>logs/</code> (args-only event files), <code>ray_results/</code>, <code>tokenized_cache/</code>, <code>outputs/</code></td></tr>
-<tr><td class="folder">FINETUNING_ACCERLATE/</td><td class="wrap"><code>config.py</code> · <code>fine_tuning.py</code> · <code>bert_classifier.py</code> · <code>data_preprocessing.py</code> · <code>logs/commercient_20250602-*.log</code> (the device-map failure, 27 files) · <code>attached_assets/*.json</code> (the four data dumps, 149,583 records)</td><td><code>training_log.txt</code> (empty), <code>models/classifier/</code> (empty), <code>setup_env.py</code></td></tr>
-<tr><td class="folder">Finetuning_Pipeline_30000/</td><td class="wrap"><code>DATASET GENERATION/FAQs_Generation.py</code> (layered parser) · <code>DATASET GENERATION/screenlog.0</code> (three days of generation) · <code>fine_tuned_gemma_v_2/checkpoint-1300/trainer_state.json</code> · <code>api_commercient_ansh_model.py</code> · <code>streamlitapp.py</code> · <code>All_Commercient_Data_Finetune_Gemma_version_1/hyperparameters.json</code></td><td>the 50 per-run generation logs, <code>temp.py</code></td></tr>
-<tr><td class="folder">COMMERCIENT_CLAUD_FINETUNING/</td><td class="wrap"><code>finetuning_pipeline.py</code> · <code>configs/llama3.1_8b.yml</code>, <code>gemma2_9b.yml</code>, <code>zero2.json</code></td><td><code>axolotl/</code> (vendored clone), <code>results/</code>, <code>models/</code> (empty)</td></tr>
-<tr><td class="folder">COMMERCIENT_CLAUDE_FINETUNING/</td><td class="wrap"><code>src/fine_tuning.py</code> (the reference trainer) · <code>src/data_processing_2.py</code> · <code>configs/training_config.yaml</code> · <code>logs/training.log</code> (the June runs) · <code>models/fine_tuned/gemma-2-9b-it-20250606_072330/</code> (the production adapter and its trainer_state) · <code>fine_tunning_accelerate.py</code></td><td>the 80 empty timestamp folders, <code>wandb/</code></td></tr>
-<tr><td class="folder">COMMERCIENT_GEMMA_FINETUNING/</td><td class="wrap"><code>GEMMA_FINETUNING/run_finetuning.sh</code>, <code>setup.py</code>, <code>src/*.py</code>, <code>requirements.txt</code> · <code>COMMERCIENT_DATASET_GENERATION/pipeline_rowwise.py</code>, <code>pipeline_rowwise.sh</code>, <code>config.json</code>, the four generator modules · <code>DUCK_DB/dbhelper.py</code> · <code>USER_INTERFACE/app.py</code></td><td><code>pipeline.py</code> (dead), <code>Story_generation.py</code> (superseded), <code>Log/</code> (empty files), the 755 MB DuckDB file</td></tr>
+<tr><td class="folder">FINETUNING_ACCERLATE/</td><td class="wrap"><code>config.py</code> · <code>fine_tuning.py</code> · <code>bert_classifier.py</code> · <code>data_preprocessing.py</code> · <code>logs/acme_20250602-*.log</code> (the device-map failure, 27 files) · <code>attached_assets/*.json</code> (the four data dumps, 149,583 records)</td><td><code>training_log.txt</code> (empty), <code>models/classifier/</code> (empty), <code>setup_env.py</code></td></tr>
+<tr><td class="folder">Finetuning_Pipeline_30000/</td><td class="wrap"><code>DATASET GENERATION/FAQs_Generation.py</code> (layered parser) · <code>DATASET GENERATION/screenlog.0</code> (three days of generation) · <code>fine_tuned_gemma_v_2/checkpoint-1300/trainer_state.json</code> · <code>api_acme_ansh_model.py</code> · <code>streamlitapp.py</code> · <code>All_Acme_Data_Finetune_Gemma_version_1/hyperparameters.json</code></td><td>the 50 per-run generation logs, <code>temp.py</code></td></tr>
+<tr><td class="folder">ACME_CLAUD_FINETUNING/</td><td class="wrap"><code>finetuning_pipeline.py</code> · <code>configs/llama3.1_8b.yml</code>, <code>gemma2_9b.yml</code>, <code>zero2.json</code></td><td><code>axolotl/</code> (vendored clone), <code>results/</code>, <code>models/</code> (empty)</td></tr>
+<tr><td class="folder">ACME_CLAUDE_FINETUNING/</td><td class="wrap"><code>src/fine_tuning.py</code> (the reference trainer) · <code>src/data_processing_2.py</code> · <code>configs/training_config.yaml</code> · <code>logs/training.log</code> (the June runs) · <code>models/fine_tuned/gemma-2-9b-it-20250606_072330/</code> (the production adapter and its trainer_state) · <code>fine_tunning_accelerate.py</code></td><td>the 80 empty timestamp folders, <code>wandb/</code></td></tr>
+<tr><td class="folder">ACME_GEMMA_FINETUNING/</td><td class="wrap"><code>GEMMA_FINETUNING/run_finetuning.sh</code>, <code>setup.py</code>, <code>src/*.py</code>, <code>requirements.txt</code> · <code>ACME_DATASET_GENERATION/pipeline_rowwise.py</code>, <code>pipeline_rowwise.sh</code>, <code>config.json</code>, the four generator modules · <code>DUCK_DB/dbhelper.py</code> · <code>USER_INTERFACE/app.py</code></td><td><code>pipeline.py</code> (dead), <code>Story_generation.py</code> (superseded), <code>Log/</code> (empty files), the 755 MB DuckDB file</td></tr>
 <tr><td class="folder">axolotl/, */axolotl/, Ditillation/thinc-9.1.1/, */unsloth_compiled_cache/, */__pycache__/</td><td>—</td><td>vendored third-party code and caches; not part of the research</td></tr>
 </tbody></table></div>
 
@@ -2774,7 +2774,7 @@ text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_pr
 </div>
 </div>
 
-<script>window.FT_DATA = {"curves": [{"id": "dir:fine_tunned_llama3_1_qlora_ansh_v_5_TAG", "era": "early", "title": "v_5_TAG \u00b7 Llama-3.1-8B", "sub": "69 steps \u00b7 3 epochs \u00b7 ~180 tagged sentences \u00b7 r 8 on q,v", "train": [[10, 3.7308], [20, 2.5248], [30, 2.1702], [40, 1.6291], [50, 1.6947], [60, 1.3039]], "eval": []}, {"id": "dir:fine_tuned_llama3_qlora_ansh_v_7", "era": "early", "title": "v_7 \u00b7 wide LoRA + lm_head", "sub": "60 steps \u00b7 10 epochs \u00b7 140 records \u00b7 r 10 on 7 proj + lm_head", "train": [[10, 3.4287], [20, 1.6696], [30, 1.0064], [40, 0.5375], [50, 0.3267], [60, 0.2348]], "eval": []}, {"id": "dir:outputs", "era": "frame", "title": "Unsloth \u00b7 Llama-3.1-8B-Instruct, bilingual", "sub": "80 steps \u00b7 80 epochs (packed) \u00b7 87 records \u00d72 languages", "train": [[10, 0.9623], [20, 0.4019], [30, 0.1528], [40, 0.0382], [50, 0.0241], [60, 0.0195], [70, 0.0187], [80, 0.0184]], "eval": []}, {"id": "dir:fine_tuned_llama_torchtune_V_3", "era": "frame", "title": "\"Torchtune\" V_3 \u00b7 plain HF Trainer", "sub": "300 steps \u00b7 15 epochs \u00b7 247 records \u00b7 r 12 on q,v", "train": [[8, 5.4166], [16, 0.6259], [24, 0.1836], [32, 0.127], [40, 0.1151], [48, 0.0985], [56, 0.1023], [64, 0.1075], [72, 0.0942], [80, 0.0767], [88, 0.0839], [96, 0.0693], [104, 0.0713], [112, 0.0587], [120, 0.0576], [128, 0.0623], [136, 0.0468], [144, 0.0495], [152, 0.0437], [160, 0.0392], [168, 0.0349], [176, 0.0306], [184, 0.0302], [192, 0.0307], [200, 0.0245], [208, 0.0235], [216, 0.021], [224, 0.0214], [232, 0.0211], [240, 0.0163], [248, 0.0194], [256, 0.0169], [264, 0.0147], [272, 0.0177], [280, 0.0154], [288, 0.0176], [296, 0.0127]], "eval": []}, {"id": "dir:Fine_tunned_ALL_SYNC_Data", "era": "frame", "title": "ALL_SYNC_Data \u00b7 tagged text", "sub": "845 steps \u00b7 5 epochs \u00b7 1,357 records \u00b7 38 min", "train": [[4, 6.3805], [8, 2.3143], [16, 0.3136], [20, 0.2296], [28, 0.148], [32, 0.1488], [36, 0.1337], [44, 0.1241], [48, 0.0928], [56, 0.1132], [60, 0.1022], [68, 0.1441], [72, 0.0993], [76, 0.1057], [84, 0.0982], [88, 0.1178], [96, 0.0872], [100, 0.1074], [104, 0.0862], [112, 0.0953], [116, 0.0893], [124, 0.0846], [128, 0.085], [132, 0.0877], [140, 0.071], [144, 0.0924], [152, 0.1113], [156, 0.076], [160, 0.0844], [168, 0.0792], [172, 0.08], [180, 0.0677], [184, 0.0713], [192, 0.068], [196, 0.0729], [200, 0.0832], [208, 0.0652], [212, 0.0688], [220, 0.0819], [224, 0.07], [228, 0.0718], [236, 0.063], [240, 0.0585], [248, 0.0607], [252, 0.0647], [256, 0.0779], [264, 0.083], [268, 0.0647], [276, 0.0602], [280, 0.0581], [284, 0.0594], [292, 0.0685], [296, 0.0677], [304, 0.066], [308, 0.0666], [316, 0.0739], [320, 0.0663], [324, 0.0717], [332, 0.0727], [336, 0.0639], [344, 0.0481], [348, 0.0511], [352, 0.0496], [360, 0.0495], [364, 0.0554], [372, 0.054], [376, 0.0523], [380, 0.052], [388, 0.0493], [392, 0.0484], [400, 0.0531], [404, 0.0562], [408, 0.055], [416, 0.0537], [420, 0.0467], [428, 0.0444], [432, 0.0501], [440, 0.0529], [444, 0.0648], [448, 0.046], [456, 0.0595], [460, 0.0632], [468, 0.043], [472, 0.0508], [476, 0.0443], [484, 0.0499], [488, 0.0548], [496, 0.0587], [500, 0.0543], [504, 0.0552], [512, 0.0436], [516, 0.0382], [524, 0.0507], [528, 0.0346], [532, 0.0401], [540, 0.0405], [544, 0.0428], [552, 0.039], [556, 0.0484], [564, 0.044], [568, 0.0359], [572, 0.0397], [580, 0.0381], [584, 0.0425], [592, 0.0368], [596, 0.0329], [600, 0.0525], [608, 0.0416], [612, 0.0413], [620, 0.043], [624, 0.0429], [628, 0.0395], [636, 0.0407], [640, 0.0363], [648, 0.0497], [652, 0.0361], [656, 0.0465], [664, 0.0442], [668, 0.0341], [676, 0.0415], [680, 0.0408], [688, 0.0315], [692, 0.0316], [696, 0.0287], [704, 0.0335], [708, 0.0355], [716, 0.0333], [720, 0.0326], [724, 0.0364], [732, 0.0339], [736, 0.0296], [744, 0.0285], [748, 0.0319], [752, 0.0308], [760, 0.0311], [764, 0.0346], [772, 0.034], [776, 0.0324], [780, 0.0384], [788, 0.0383], [792, 0.0388], [800, 0.0343], [804, 0.0305], [812, 0.0294], [816, 0.0339], [820, 0.0357], [828, 0.0375], [832, 0.0356], [840, 0.0403], [844, 0.0392]], "eval": []}, {"id": "dir:fine_tuned_model", "era": "frame", "title": "Final_Finetunning \u00b7 trl SFTTrainer", "sub": "968 steps \u00b7 8 epochs \u00b7 3,878 records \u00b7 2 h 42 min", "train": [[4, 6.5404], [12, 0.9892], [16, 0.3476], [24, 0.2225], [28, 0.2044], [36, 0.1531], [44, 0.1345], [48, 0.1381], [56, 0.1262], [64, 0.1321], [68, 0.128], [76, 0.1344], [80, 0.1195], [88, 0.1037], [96, 0.1141], [100, 0.1091], [108, 0.1225], [112, 0.111], [120, 0.1145], [128, 0.1079], [132, 0.096], [140, 0.1057], [148, 0.1109], [152, 0.092], [160, 0.0924], [164, 0.0986], [172, 0.0971], [180, 0.101], [184, 0.0944], [192, 0.0976], [200, 0.1007], [204, 0.0871], [212, 0.0914], [216, 0.0962], [224, 0.0891], [232, 0.0965], [236, 0.0939], [244, 0.0809], [248, 0.0832], [256, 0.0804], [264, 0.0781], [268, 0.0869], [276, 0.0855], [284, 0.0892], [288, 0.0757], [296, 0.071], [300, 0.0744], [308, 0.0803], [316, 0.0806], [320, 0.0799], [328, 0.0805], [332, 0.0759], [340, 0.0732], [348, 0.0671], [352, 0.0792], [360, 0.0809], [368, 0.0749], [372, 0.0667], [380, 0.0715], [384, 0.0636], [392, 0.0684], [400, 0.0679], [404, 0.0586], [412, 0.0704], [420, 0.0604], [424, 0.0683], [432, 0.0683], [436, 0.0707], [444, 0.0689], [452, 0.0698], [456, 0.0677], [464, 0.0609], [468, 0.0623], [476, 0.0694], [484, 0.0633], [488, 0.0668], [496, 0.0544], [504, 0.0625], [508, 0.0576], [516, 0.0564], [520, 0.0567], [528, 0.0563], [536, 0.0608], [540, 0.0499], [548, 0.0608], [552, 0.0607], [560, 0.0557], [568, 0.0507], [572, 0.0594], [580, 0.0548], [588, 0.0556], [592, 0.0556], [600, 0.0579], [604, 0.0531], [612, 0.0508], [620, 0.0503], [624, 0.0464], [632, 0.0486], [640, 0.05], [644, 0.0463], [652, 0.0491], [656, 0.0501], [664, 0.0483], [672, 0.0506], [676, 0.0535], [684, 0.0506], [688, 0.0487], [696, 0.0486], [704, 0.0507], [708, 0.0492], [716, 0.0499], [724, 0.0471], [728, 0.0522], [736, 0.0443], [740, 0.0482], [748, 0.0393], [756, 0.0466], [760, 0.0485], [768, 0.0432], [772, 0.0475], [780, 0.0459], [788, 0.0426], [792, 0.0442], [800, 0.0455], [808, 0.0468], [812, 0.0434], [820, 0.0418], [824, 0.0457], [832, 0.0496], [840, 0.0464], [844, 0.0476], [852, 0.044], [860, 0.0423], [864, 0.0417], [872, 0.0446], [876, 0.0402], [884, 0.0445], [892, 0.0457], [896, 0.0391], [904, 0.0434], [908, 0.0433], [916, 0.0391], [924, 0.0416], [928, 0.0422], [936, 0.0491], [944, 0.0448], [948, 0.0479], [956, 0.0463], [960, 0.0398], [968, 0.0435]], "eval": []}, {"id": "dir:fine_tuned_gemma_v_2", "era": "frame", "title": "Gemma-2-9B v_2 \u00b7 the served adapter", "sub": "1,300 of 6,765 steps \u00b7 ~27k records \u00b7 stopped at 19%", "train": [[10, 3.9074], [20, 3.645], [30, 3.2973], [40, 2.5529], [50, 1.5505], [60, 2.1299], [70, 1.4662], [80, 1.2054], [90, 1.1316], [100, 1.0733], [110, 1.6695], [120, 1.2385], [130, 1.0108], [140, 1.0037], [150, 0.9418], [160, 1.4702], [170, 1.1024], [180, 0.9447], [190, 0.9175], [200, 0.8357], [210, 1.4171], [220, 1.0507], [230, 0.9099], [240, 0.8791], [250, 0.8252], [260, 1.3901], [270, 1.0331], [280, 0.8616], [290, 0.816], [300, 0.7611], [310, 1.3589], [320, 0.9324], [330, 0.8478], [340, 0.8095], [350, 0.7432], [360, 1.3622], [370, 0.9652], [380, 0.8432], [390, 0.815], [400, 0.7605], [410, 1.3005], [420, 0.9749], [430, 0.8469], [440, 0.7663], [450, 0.7422], [460, 1.3013], [470, 0.965], [480, 0.8248], [490, 0.7822], [500, 0.7334], [510, 1.2438], [520, 0.9467], [530, 0.8243], [540, 0.755], [550, 0.719], [560, 1.2301], [570, 0.9308], [580, 0.8044], [590, 0.7963], [600, 0.7042], [610, 1.2184], [620, 0.9119], [630, 0.7757], [640, 0.7721], [650, 0.6939], [660, 1.2159], [670, 0.9235], [680, 0.8126], [690, 0.7538], [700, 0.6894], [710, 1.2061], [720, 0.8341], [730, 0.788], [740, 0.7319], [750, 0.6574], [760, 1.208], [770, 0.9391], [780, 0.789], [790, 0.7399], [800, 0.6891], [810, 1.1933], [820, 0.9311], [830, 0.7615], [840, 0.7305], [850, 0.6831], [860, 1.2017], [870, 0.8816], [880, 0.7701], [890, 0.7115], [900, 0.6416], [910, 1.1574], [920, 0.8837], [930, 0.7618], [940, 0.7174], [950, 0.6404], [960, 1.1707], [970, 0.8912], [980, 0.7876], [990, 0.7226], [1000, 0.6551], [1010, 1.1425], [1020, 0.8767], [1030, 0.7302], [1040, 0.714], [1050, 0.6334], [1060, 1.1522], [1070, 0.9102], [1080, 0.7796], [1090, 0.7127], [1100, 0.6498], [1110, 1.1266], [1120, 0.856], [1130, 0.7353], [1140, 0.6758], [1150, 0.6574], [1160, 1.1912], [1170, 0.8819], [1180, 0.7399], [1190, 0.6902], [1200, 0.6342], [1210, 1.1182], [1220, 0.8257], [1230, 0.7345], [1240, 0.7021], [1250, 0.65], [1260, 1.138], [1270, 0.8321], [1280, 0.7339], [1290, 0.7211], [1300, 0.612]], "eval": [[100, 1.3809], [200, 1.1106], [300, 1.0482], [400, 1.0112], [500, 0.9676], [600, 0.9527], [700, 0.8878], [800, 0.8843], [900, 0.8588], [1000, 0.856], [1100, 0.8321], [1200, 0.822], [1300, 0.8154]]}, {"id": "dir:gemma-2-9b-it-20250605_062904", "era": "prod", "title": "Gemma 5 Jun \u00b7 lr 2e-5 \u00b7 seq 2048", "sub": "500 steps \u00b7 died writing checkpoint-500", "train": [[10, 5.1905], [20, 4.9096], [30, 4.4491], [40, 3.8785], [50, 3.124], [60, 2.5228], [70, 2.2337], [80, 2.0195], [90, 1.9302], [100, 1.7843], [110, 1.7184], [120, 1.748], [130, 1.6421], [140, 1.5942], [150, 1.5295], [160, 1.45], [170, 1.4415], [180, 1.3775], [190, 1.3391], [200, 1.3046], [210, 1.2815], [220, 1.336], [230, 1.3033], [240, 1.2883], [250, 1.2929], [260, 1.2662], [270, 1.2864], [280, 1.2971], [290, 1.2317], [300, 1.2996], [310, 1.3153], [320, 1.3263], [330, 1.2842], [340, 1.306], [350, 1.291], [360, 1.2596], [370, 1.2062], [380, 1.2459], [390, 1.2654], [400, 1.2535], [410, 1.2276], [420, 1.231], [430, 1.2288], [440, 1.1704], [450, 1.2295], [460, 1.1775], [470, 1.1632], [480, 1.2016], [490, 1.2103], [500, 1.2215]], "eval": [[100, 1.7725], [200, 1.2776], [300, 1.2272], [400, 1.1822]]}, {"id": "dir:gemma-2-9b-it-20250606_072330", "era": "prod", "title": "Gemma 6\u201311 Jun \u00b7 the production run", "sub": "12,400 of 17,949 steps \u00b7 119,666 records \u00b7 117 h \u00b7 early stopped", "train": [[5, 3.7998], [100, 2.019], [170, 1.6028], [255, 1.8314], [340, 1.1777], [400, 0.9399], [500, 0.8866], [585, 0.9778], [600, 0.8284], [700, 0.8024], [800, 0.7618], [835, 0.9832], [920, 1.0705], [1005, 1.5631], [1085, 0.9359], [1170, 1.0136], [1255, 1.5523], [1300, 0.8186], [1400, 0.7766], [1500, 0.7494], [1585, 0.9238], [1670, 0.9991], [1750, 0.7598], [1800, 0.7177], [1900, 0.7293], [2000, 0.7367], [2085, 0.9215], [2170, 0.9696], [2200, 0.7249], [2300, 0.7465], [2400, 0.6965], [2415, 1.0344], [2585, 0.8802], [2665, 1.0222], [2700, 0.725], [2800, 0.7278], [2900, 0.6627], [2915, 1.0082], [3085, 0.8509], [3165, 1.0755], [3200, 0.7203], [3300, 0.6992], [3400, 0.6772], [3415, 1.0025], [3580, 0.8744], [3665, 1.0213], [3700, 0.7148], [3800, 0.6853], [3900, 0.7346], [3915, 1.0084], [4080, 0.8799], [4165, 0.9884], [4200, 0.671], [4300, 0.6731], [4400, 0.6546], [4415, 0.9813], [4500, 0.6953], [4600, 0.6885], [4665, 1.0044], [4745, 0.784], [4830, 0.8723], [4900, 0.6807], [4995, 0.7888], [5080, 0.8213], [5100, 0.6722], [5200, 0.7024], [5300, 0.7041], [5330, 0.8632], [5410, 1.3344], [5500, 0.6665], [5580, 0.8992], [5660, 1.1795], [5745, 0.7854], [5800, 0.6981], [5900, 0.6707], [5995, 1.1099], [6000, 0.9364], [6100, 0.9259], [6200, 0.9526], [6245, 1.0306], [6325, 0.7699], [6400, 0.9209], [6495, 1.0183], [6575, 0.7431], [6600, 0.985], [6700, 0.9173], [6800, 0.9027], [6825, 0.7353], [6910, 0.8555], [7000, 0.9463], [7075, 0.7641], [7160, 0.836], [7240, 1.3801], [7300, 0.8865], [7400, 0.9214], [7490, 1.3585], [7500, 0.9042], [7600, 0.9218], [7700, 0.949], [7740, 1.355], [7825, 0.7707], [7910, 0.8314], [7990, 1.3711], [8075, 0.7672], [8155, 0.863], [8200, 0.8783], [8300, 0.912], [8400, 0.8955], [8405, 0.8486], [8500, 0.926], [8600, 0.9354], [8655, 0.8923], [8740, 1.3626], [8825, 0.7472], [8900, 0.8631], [8990, 1.3862], [9070, 0.781], [9100, 0.8971], [9200, 0.9398], [9300, 0.9021], [9320, 0.7791], [9405, 0.8653], [9500, 0.9345], [9570, 0.7713], [9655, 0.811], [9740, 1.358], [9800, 0.8938], [9900, 0.8959], [9990, 1.3504], [10000, 0.9137], [10100, 0.8984], [10200, 0.9023], [10235, 0.8763], [10320, 0.7453], [10400, 0.8999], [10485, 0.8143], [10570, 0.7569], [10600, 0.9264], [10700, 0.91], [10800, 0.8816], [10820, 0.7745], [10905, 0.8411], [11000, 0.8983], [11070, 0.7774], [11150, 0.91], [11235, 0.8344], [11300, 0.8724], [11400, 0.8774], [11500, 0.9072], [11570, 0.7631], [11650, 0.8957], [11735, 0.8643], [11800, 0.8428], [11900, 0.9001], [12000, 0.7605], [12065, 0.6254], [12150, 0.7591], [12235, 0.8451], [12300, 0.7481], [12400, 0.7339]], "eval": [[100, 2.212], [200, 1.625], [300, 1.2706], [400, 1.2049], [500, 1.1521], [600, 1.1202], [700, 1.1041], [800, 1.0915], [900, 1.0812], [1000, 1.0777], [1100, 1.067], [1200, 1.0613], [1300, 1.0546], [1400, 1.0508], [1500, 1.0457], [1600, 1.0383], [1700, 1.0342], [1800, 1.0332], [1900, 1.0279], [2000, 1.026], [2100, 1.0222], [2200, 1.0177], [2300, 1.0174], [2400, 1.0149], [2500, 1.0101], [2600, 1.0064], [2700, 1.0058], [2800, 1.0048], [2900, 1.0024], [3000, 0.9994], [3100, 0.9985], [3200, 0.9951], [3300, 0.9931], [3400, 0.9937], [3500, 0.9918], [3600, 0.9899], [3700, 0.9848], [3800, 0.9833], [3900, 0.9809], [4000, 0.9809], [4100, 0.9798], [4200, 0.9777], [4300, 0.976], [4400, 0.9729], [4500, 0.9729], [4600, 0.9716], [4700, 0.972], [4800, 0.9699], [4900, 0.9666], [5000, 0.965], [5100, 0.9644], [5200, 0.9621], [5300, 0.9616], [5400, 0.9602], [5500, 0.9581], [5600, 0.957], [5700, 0.9562], [5800, 0.9556], [5900, 0.9539], [6000, 0.9522], [6100, 0.9527], [6200, 0.9511], [6300, 0.9506], [6400, 0.9498], [6500, 0.9484], [6600, 0.9482], [6700, 0.9463], [6800, 0.9467], [6900, 0.9463], [7000, 0.9439], [7100, 0.9443], [7200, 0.9421], [7300, 0.942], [7400, 0.9401], [7500, 0.9404], [7600, 0.939], [7700, 0.9394], [7800, 0.9375], [7900, 0.9366], [8000, 0.9356], [8100, 0.9352], [8200, 0.9343], [8300, 0.9337], [8400, 0.933], [8500, 0.932], [8600, 0.9317], [8700, 0.9304], [8800, 0.9305], [8900, 0.9294], [9000, 0.9291], [9100, 0.9281], [9200, 0.9275], [9300, 0.9267], [9400, 0.9263], [9500, 0.9259], [9600, 0.9247], [9700, 0.9241], [9800, 0.9237], [9900, 0.9225], [10000, 0.9226], [10100, 0.9216], [10200, 0.9212], [10300, 0.9206], [10400, 0.9202], [10500, 0.9197], [10600, 0.9192], [10700, 0.9189], [10800, 0.9182], [10900, 0.9182], [11000, 0.9173], [11100, 0.9166], [11200, 0.9161], [11300, 0.9159], [11400, 0.9154], [11500, 0.9146], [11600, 0.9141], [11700, 0.9141], [11800, 0.9137], [11900, 0.913], [12000, 0.915], [12100, 0.9154], [12200, 0.9156], [12300, 0.9154], [12400, 0.9148]]}], "sizes": [["2025-02-25", "v / v_4", 90, "early"], ["2025-02-26", "v_5_TAG", 180, "early"], ["2025-02-27", "v_6_TAG_JSON", 2, "early"], ["2025-02-27", "v_7", 140, "early"], ["2025-03-03", "Ditillation FAQ", 39, "early"], ["2025-03-11", "Unsloth Alpaca", 247, "frame"], ["2025-03-27", "Torchtune runs", 247, "frame"], ["2025-04-17", "ALL_TRAINING tagged", 1357, "frame"], ["2025-04-22", "Commercient_ALL_TRAINING", 3878, "frame"], ["2025-05-14", "Gemma v_2", 27060, "frame"], ["2025-06-04", "All_Commercient v1", 143599, "prod"], ["2025-06-06", "production run", 119666, "prod"], ["2025-07-18", "CLI smoke test (TEST customer)", 6, "prod"]]};</script>
+<script>window.FT_DATA = {"curves": [{"id": "dir:fine_tunned_llama3_1_qlora_ansh_v_5_TAG", "era": "early", "title": "v_5_TAG \u00b7 Llama-3.1-8B", "sub": "69 steps \u00b7 3 epochs \u00b7 ~180 tagged sentences \u00b7 r 8 on q,v", "train": [[10, 3.7308], [20, 2.5248], [30, 2.1702], [40, 1.6291], [50, 1.6947], [60, 1.3039]], "eval": []}, {"id": "dir:fine_tuned_llama3_qlora_ansh_v_7", "era": "early", "title": "v_7 \u00b7 wide LoRA + lm_head", "sub": "60 steps \u00b7 10 epochs \u00b7 140 records \u00b7 r 10 on 7 proj + lm_head", "train": [[10, 3.4287], [20, 1.6696], [30, 1.0064], [40, 0.5375], [50, 0.3267], [60, 0.2348]], "eval": []}, {"id": "dir:outputs", "era": "frame", "title": "Unsloth \u00b7 Llama-3.1-8B-Instruct, bilingual", "sub": "80 steps \u00b7 80 epochs (packed) \u00b7 87 records \u00d72 languages", "train": [[10, 0.9623], [20, 0.4019], [30, 0.1528], [40, 0.0382], [50, 0.0241], [60, 0.0195], [70, 0.0187], [80, 0.0184]], "eval": []}, {"id": "dir:fine_tuned_llama_torchtune_V_3", "era": "frame", "title": "\"Torchtune\" V_3 \u00b7 plain HF Trainer", "sub": "300 steps \u00b7 15 epochs \u00b7 247 records \u00b7 r 12 on q,v", "train": [[8, 5.4166], [16, 0.6259], [24, 0.1836], [32, 0.127], [40, 0.1151], [48, 0.0985], [56, 0.1023], [64, 0.1075], [72, 0.0942], [80, 0.0767], [88, 0.0839], [96, 0.0693], [104, 0.0713], [112, 0.0587], [120, 0.0576], [128, 0.0623], [136, 0.0468], [144, 0.0495], [152, 0.0437], [160, 0.0392], [168, 0.0349], [176, 0.0306], [184, 0.0302], [192, 0.0307], [200, 0.0245], [208, 0.0235], [216, 0.021], [224, 0.0214], [232, 0.0211], [240, 0.0163], [248, 0.0194], [256, 0.0169], [264, 0.0147], [272, 0.0177], [280, 0.0154], [288, 0.0176], [296, 0.0127]], "eval": []}, {"id": "dir:Fine_tunned_ALL_SYNC_Data", "era": "frame", "title": "ALL_SYNC_Data \u00b7 tagged text", "sub": "845 steps \u00b7 5 epochs \u00b7 1,357 records \u00b7 38 min", "train": [[4, 6.3805], [8, 2.3143], [16, 0.3136], [20, 0.2296], [28, 0.148], [32, 0.1488], [36, 0.1337], [44, 0.1241], [48, 0.0928], [56, 0.1132], [60, 0.1022], [68, 0.1441], [72, 0.0993], [76, 0.1057], [84, 0.0982], [88, 0.1178], [96, 0.0872], [100, 0.1074], [104, 0.0862], [112, 0.0953], [116, 0.0893], [124, 0.0846], [128, 0.085], [132, 0.0877], [140, 0.071], [144, 0.0924], [152, 0.1113], [156, 0.076], [160, 0.0844], [168, 0.0792], [172, 0.08], [180, 0.0677], [184, 0.0713], [192, 0.068], [196, 0.0729], [200, 0.0832], [208, 0.0652], [212, 0.0688], [220, 0.0819], [224, 0.07], [228, 0.0718], [236, 0.063], [240, 0.0585], [248, 0.0607], [252, 0.0647], [256, 0.0779], [264, 0.083], [268, 0.0647], [276, 0.0602], [280, 0.0581], [284, 0.0594], [292, 0.0685], [296, 0.0677], [304, 0.066], [308, 0.0666], [316, 0.0739], [320, 0.0663], [324, 0.0717], [332, 0.0727], [336, 0.0639], [344, 0.0481], [348, 0.0511], [352, 0.0496], [360, 0.0495], [364, 0.0554], [372, 0.054], [376, 0.0523], [380, 0.052], [388, 0.0493], [392, 0.0484], [400, 0.0531], [404, 0.0562], [408, 0.055], [416, 0.0537], [420, 0.0467], [428, 0.0444], [432, 0.0501], [440, 0.0529], [444, 0.0648], [448, 0.046], [456, 0.0595], [460, 0.0632], [468, 0.043], [472, 0.0508], [476, 0.0443], [484, 0.0499], [488, 0.0548], [496, 0.0587], [500, 0.0543], [504, 0.0552], [512, 0.0436], [516, 0.0382], [524, 0.0507], [528, 0.0346], [532, 0.0401], [540, 0.0405], [544, 0.0428], [552, 0.039], [556, 0.0484], [564, 0.044], [568, 0.0359], [572, 0.0397], [580, 0.0381], [584, 0.0425], [592, 0.0368], [596, 0.0329], [600, 0.0525], [608, 0.0416], [612, 0.0413], [620, 0.043], [624, 0.0429], [628, 0.0395], [636, 0.0407], [640, 0.0363], [648, 0.0497], [652, 0.0361], [656, 0.0465], [664, 0.0442], [668, 0.0341], [676, 0.0415], [680, 0.0408], [688, 0.0315], [692, 0.0316], [696, 0.0287], [704, 0.0335], [708, 0.0355], [716, 0.0333], [720, 0.0326], [724, 0.0364], [732, 0.0339], [736, 0.0296], [744, 0.0285], [748, 0.0319], [752, 0.0308], [760, 0.0311], [764, 0.0346], [772, 0.034], [776, 0.0324], [780, 0.0384], [788, 0.0383], [792, 0.0388], [800, 0.0343], [804, 0.0305], [812, 0.0294], [816, 0.0339], [820, 0.0357], [828, 0.0375], [832, 0.0356], [840, 0.0403], [844, 0.0392]], "eval": []}, {"id": "dir:fine_tuned_model", "era": "frame", "title": "Final_Finetunning \u00b7 trl SFTTrainer", "sub": "968 steps \u00b7 8 epochs \u00b7 3,878 records \u00b7 2 h 42 min", "train": [[4, 6.5404], [12, 0.9892], [16, 0.3476], [24, 0.2225], [28, 0.2044], [36, 0.1531], [44, 0.1345], [48, 0.1381], [56, 0.1262], [64, 0.1321], [68, 0.128], [76, 0.1344], [80, 0.1195], [88, 0.1037], [96, 0.1141], [100, 0.1091], [108, 0.1225], [112, 0.111], [120, 0.1145], [128, 0.1079], [132, 0.096], [140, 0.1057], [148, 0.1109], [152, 0.092], [160, 0.0924], [164, 0.0986], [172, 0.0971], [180, 0.101], [184, 0.0944], [192, 0.0976], [200, 0.1007], [204, 0.0871], [212, 0.0914], [216, 0.0962], [224, 0.0891], [232, 0.0965], [236, 0.0939], [244, 0.0809], [248, 0.0832], [256, 0.0804], [264, 0.0781], [268, 0.0869], [276, 0.0855], [284, 0.0892], [288, 0.0757], [296, 0.071], [300, 0.0744], [308, 0.0803], [316, 0.0806], [320, 0.0799], [328, 0.0805], [332, 0.0759], [340, 0.0732], [348, 0.0671], [352, 0.0792], [360, 0.0809], [368, 0.0749], [372, 0.0667], [380, 0.0715], [384, 0.0636], [392, 0.0684], [400, 0.0679], [404, 0.0586], [412, 0.0704], [420, 0.0604], [424, 0.0683], [432, 0.0683], [436, 0.0707], [444, 0.0689], [452, 0.0698], [456, 0.0677], [464, 0.0609], [468, 0.0623], [476, 0.0694], [484, 0.0633], [488, 0.0668], [496, 0.0544], [504, 0.0625], [508, 0.0576], [516, 0.0564], [520, 0.0567], [528, 0.0563], [536, 0.0608], [540, 0.0499], [548, 0.0608], [552, 0.0607], [560, 0.0557], [568, 0.0507], [572, 0.0594], [580, 0.0548], [588, 0.0556], [592, 0.0556], [600, 0.0579], [604, 0.0531], [612, 0.0508], [620, 0.0503], [624, 0.0464], [632, 0.0486], [640, 0.05], [644, 0.0463], [652, 0.0491], [656, 0.0501], [664, 0.0483], [672, 0.0506], [676, 0.0535], [684, 0.0506], [688, 0.0487], [696, 0.0486], [704, 0.0507], [708, 0.0492], [716, 0.0499], [724, 0.0471], [728, 0.0522], [736, 0.0443], [740, 0.0482], [748, 0.0393], [756, 0.0466], [760, 0.0485], [768, 0.0432], [772, 0.0475], [780, 0.0459], [788, 0.0426], [792, 0.0442], [800, 0.0455], [808, 0.0468], [812, 0.0434], [820, 0.0418], [824, 0.0457], [832, 0.0496], [840, 0.0464], [844, 0.0476], [852, 0.044], [860, 0.0423], [864, 0.0417], [872, 0.0446], [876, 0.0402], [884, 0.0445], [892, 0.0457], [896, 0.0391], [904, 0.0434], [908, 0.0433], [916, 0.0391], [924, 0.0416], [928, 0.0422], [936, 0.0491], [944, 0.0448], [948, 0.0479], [956, 0.0463], [960, 0.0398], [968, 0.0435]], "eval": []}, {"id": "dir:fine_tuned_gemma_v_2", "era": "frame", "title": "Gemma-2-9B v_2 \u00b7 the served adapter", "sub": "1,300 of 6,765 steps \u00b7 ~27k records \u00b7 stopped at 19%", "train": [[10, 3.9074], [20, 3.645], [30, 3.2973], [40, 2.5529], [50, 1.5505], [60, 2.1299], [70, 1.4662], [80, 1.2054], [90, 1.1316], [100, 1.0733], [110, 1.6695], [120, 1.2385], [130, 1.0108], [140, 1.0037], [150, 0.9418], [160, 1.4702], [170, 1.1024], [180, 0.9447], [190, 0.9175], [200, 0.8357], [210, 1.4171], [220, 1.0507], [230, 0.9099], [240, 0.8791], [250, 0.8252], [260, 1.3901], [270, 1.0331], [280, 0.8616], [290, 0.816], [300, 0.7611], [310, 1.3589], [320, 0.9324], [330, 0.8478], [340, 0.8095], [350, 0.7432], [360, 1.3622], [370, 0.9652], [380, 0.8432], [390, 0.815], [400, 0.7605], [410, 1.3005], [420, 0.9749], [430, 0.8469], [440, 0.7663], [450, 0.7422], [460, 1.3013], [470, 0.965], [480, 0.8248], [490, 0.7822], [500, 0.7334], [510, 1.2438], [520, 0.9467], [530, 0.8243], [540, 0.755], [550, 0.719], [560, 1.2301], [570, 0.9308], [580, 0.8044], [590, 0.7963], [600, 0.7042], [610, 1.2184], [620, 0.9119], [630, 0.7757], [640, 0.7721], [650, 0.6939], [660, 1.2159], [670, 0.9235], [680, 0.8126], [690, 0.7538], [700, 0.6894], [710, 1.2061], [720, 0.8341], [730, 0.788], [740, 0.7319], [750, 0.6574], [760, 1.208], [770, 0.9391], [780, 0.789], [790, 0.7399], [800, 0.6891], [810, 1.1933], [820, 0.9311], [830, 0.7615], [840, 0.7305], [850, 0.6831], [860, 1.2017], [870, 0.8816], [880, 0.7701], [890, 0.7115], [900, 0.6416], [910, 1.1574], [920, 0.8837], [930, 0.7618], [940, 0.7174], [950, 0.6404], [960, 1.1707], [970, 0.8912], [980, 0.7876], [990, 0.7226], [1000, 0.6551], [1010, 1.1425], [1020, 0.8767], [1030, 0.7302], [1040, 0.714], [1050, 0.6334], [1060, 1.1522], [1070, 0.9102], [1080, 0.7796], [1090, 0.7127], [1100, 0.6498], [1110, 1.1266], [1120, 0.856], [1130, 0.7353], [1140, 0.6758], [1150, 0.6574], [1160, 1.1912], [1170, 0.8819], [1180, 0.7399], [1190, 0.6902], [1200, 0.6342], [1210, 1.1182], [1220, 0.8257], [1230, 0.7345], [1240, 0.7021], [1250, 0.65], [1260, 1.138], [1270, 0.8321], [1280, 0.7339], [1290, 0.7211], [1300, 0.612]], "eval": [[100, 1.3809], [200, 1.1106], [300, 1.0482], [400, 1.0112], [500, 0.9676], [600, 0.9527], [700, 0.8878], [800, 0.8843], [900, 0.8588], [1000, 0.856], [1100, 0.8321], [1200, 0.822], [1300, 0.8154]]}, {"id": "dir:gemma-2-9b-it-20250605_062904", "era": "prod", "title": "Gemma 5 Jun \u00b7 lr 2e-5 \u00b7 seq 2048", "sub": "500 steps \u00b7 died writing checkpoint-500", "train": [[10, 5.1905], [20, 4.9096], [30, 4.4491], [40, 3.8785], [50, 3.124], [60, 2.5228], [70, 2.2337], [80, 2.0195], [90, 1.9302], [100, 1.7843], [110, 1.7184], [120, 1.748], [130, 1.6421], [140, 1.5942], [150, 1.5295], [160, 1.45], [170, 1.4415], [180, 1.3775], [190, 1.3391], [200, 1.3046], [210, 1.2815], [220, 1.336], [230, 1.3033], [240, 1.2883], [250, 1.2929], [260, 1.2662], [270, 1.2864], [280, 1.2971], [290, 1.2317], [300, 1.2996], [310, 1.3153], [320, 1.3263], [330, 1.2842], [340, 1.306], [350, 1.291], [360, 1.2596], [370, 1.2062], [380, 1.2459], [390, 1.2654], [400, 1.2535], [410, 1.2276], [420, 1.231], [430, 1.2288], [440, 1.1704], [450, 1.2295], [460, 1.1775], [470, 1.1632], [480, 1.2016], [490, 1.2103], [500, 1.2215]], "eval": [[100, 1.7725], [200, 1.2776], [300, 1.2272], [400, 1.1822]]}, {"id": "dir:gemma-2-9b-it-20250606_072330", "era": "prod", "title": "Gemma 6\u201311 Jun \u00b7 the production run", "sub": "12,400 of 17,949 steps \u00b7 119,666 records \u00b7 117 h \u00b7 early stopped", "train": [[5, 3.7998], [100, 2.019], [170, 1.6028], [255, 1.8314], [340, 1.1777], [400, 0.9399], [500, 0.8866], [585, 0.9778], [600, 0.8284], [700, 0.8024], [800, 0.7618], [835, 0.9832], [920, 1.0705], [1005, 1.5631], [1085, 0.9359], [1170, 1.0136], [1255, 1.5523], [1300, 0.8186], [1400, 0.7766], [1500, 0.7494], [1585, 0.9238], [1670, 0.9991], [1750, 0.7598], [1800, 0.7177], [1900, 0.7293], [2000, 0.7367], [2085, 0.9215], [2170, 0.9696], [2200, 0.7249], [2300, 0.7465], [2400, 0.6965], [2415, 1.0344], [2585, 0.8802], [2665, 1.0222], [2700, 0.725], [2800, 0.7278], [2900, 0.6627], [2915, 1.0082], [3085, 0.8509], [3165, 1.0755], [3200, 0.7203], [3300, 0.6992], [3400, 0.6772], [3415, 1.0025], [3580, 0.8744], [3665, 1.0213], [3700, 0.7148], [3800, 0.6853], [3900, 0.7346], [3915, 1.0084], [4080, 0.8799], [4165, 0.9884], [4200, 0.671], [4300, 0.6731], [4400, 0.6546], [4415, 0.9813], [4500, 0.6953], [4600, 0.6885], [4665, 1.0044], [4745, 0.784], [4830, 0.8723], [4900, 0.6807], [4995, 0.7888], [5080, 0.8213], [5100, 0.6722], [5200, 0.7024], [5300, 0.7041], [5330, 0.8632], [5410, 1.3344], [5500, 0.6665], [5580, 0.8992], [5660, 1.1795], [5745, 0.7854], [5800, 0.6981], [5900, 0.6707], [5995, 1.1099], [6000, 0.9364], [6100, 0.9259], [6200, 0.9526], [6245, 1.0306], [6325, 0.7699], [6400, 0.9209], [6495, 1.0183], [6575, 0.7431], [6600, 0.985], [6700, 0.9173], [6800, 0.9027], [6825, 0.7353], [6910, 0.8555], [7000, 0.9463], [7075, 0.7641], [7160, 0.836], [7240, 1.3801], [7300, 0.8865], [7400, 0.9214], [7490, 1.3585], [7500, 0.9042], [7600, 0.9218], [7700, 0.949], [7740, 1.355], [7825, 0.7707], [7910, 0.8314], [7990, 1.3711], [8075, 0.7672], [8155, 0.863], [8200, 0.8783], [8300, 0.912], [8400, 0.8955], [8405, 0.8486], [8500, 0.926], [8600, 0.9354], [8655, 0.8923], [8740, 1.3626], [8825, 0.7472], [8900, 0.8631], [8990, 1.3862], [9070, 0.781], [9100, 0.8971], [9200, 0.9398], [9300, 0.9021], [9320, 0.7791], [9405, 0.8653], [9500, 0.9345], [9570, 0.7713], [9655, 0.811], [9740, 1.358], [9800, 0.8938], [9900, 0.8959], [9990, 1.3504], [10000, 0.9137], [10100, 0.8984], [10200, 0.9023], [10235, 0.8763], [10320, 0.7453], [10400, 0.8999], [10485, 0.8143], [10570, 0.7569], [10600, 0.9264], [10700, 0.91], [10800, 0.8816], [10820, 0.7745], [10905, 0.8411], [11000, 0.8983], [11070, 0.7774], [11150, 0.91], [11235, 0.8344], [11300, 0.8724], [11400, 0.8774], [11500, 0.9072], [11570, 0.7631], [11650, 0.8957], [11735, 0.8643], [11800, 0.8428], [11900, 0.9001], [12000, 0.7605], [12065, 0.6254], [12150, 0.7591], [12235, 0.8451], [12300, 0.7481], [12400, 0.7339]], "eval": [[100, 2.212], [200, 1.625], [300, 1.2706], [400, 1.2049], [500, 1.1521], [600, 1.1202], [700, 1.1041], [800, 1.0915], [900, 1.0812], [1000, 1.0777], [1100, 1.067], [1200, 1.0613], [1300, 1.0546], [1400, 1.0508], [1500, 1.0457], [1600, 1.0383], [1700, 1.0342], [1800, 1.0332], [1900, 1.0279], [2000, 1.026], [2100, 1.0222], [2200, 1.0177], [2300, 1.0174], [2400, 1.0149], [2500, 1.0101], [2600, 1.0064], [2700, 1.0058], [2800, 1.0048], [2900, 1.0024], [3000, 0.9994], [3100, 0.9985], [3200, 0.9951], [3300, 0.9931], [3400, 0.9937], [3500, 0.9918], [3600, 0.9899], [3700, 0.9848], [3800, 0.9833], [3900, 0.9809], [4000, 0.9809], [4100, 0.9798], [4200, 0.9777], [4300, 0.976], [4400, 0.9729], [4500, 0.9729], [4600, 0.9716], [4700, 0.972], [4800, 0.9699], [4900, 0.9666], [5000, 0.965], [5100, 0.9644], [5200, 0.9621], [5300, 0.9616], [5400, 0.9602], [5500, 0.9581], [5600, 0.957], [5700, 0.9562], [5800, 0.9556], [5900, 0.9539], [6000, 0.9522], [6100, 0.9527], [6200, 0.9511], [6300, 0.9506], [6400, 0.9498], [6500, 0.9484], [6600, 0.9482], [6700, 0.9463], [6800, 0.9467], [6900, 0.9463], [7000, 0.9439], [7100, 0.9443], [7200, 0.9421], [7300, 0.942], [7400, 0.9401], [7500, 0.9404], [7600, 0.939], [7700, 0.9394], [7800, 0.9375], [7900, 0.9366], [8000, 0.9356], [8100, 0.9352], [8200, 0.9343], [8300, 0.9337], [8400, 0.933], [8500, 0.932], [8600, 0.9317], [8700, 0.9304], [8800, 0.9305], [8900, 0.9294], [9000, 0.9291], [9100, 0.9281], [9200, 0.9275], [9300, 0.9267], [9400, 0.9263], [9500, 0.9259], [9600, 0.9247], [9700, 0.9241], [9800, 0.9237], [9900, 0.9225], [10000, 0.9226], [10100, 0.9216], [10200, 0.9212], [10300, 0.9206], [10400, 0.9202], [10500, 0.9197], [10600, 0.9192], [10700, 0.9189], [10800, 0.9182], [10900, 0.9182], [11000, 0.9173], [11100, 0.9166], [11200, 0.9161], [11300, 0.9159], [11400, 0.9154], [11500, 0.9146], [11600, 0.9141], [11700, 0.9141], [11800, 0.9137], [11900, 0.913], [12000, 0.915], [12100, 0.9154], [12200, 0.9156], [12300, 0.9154], [12400, 0.9148]]}], "sizes": [["2025-02-25", "v / v_4", 90, "early"], ["2025-02-26", "v_5_TAG", 180, "early"], ["2025-02-27", "v_6_TAG_JSON", 2, "early"], ["2025-02-27", "v_7", 140, "early"], ["2025-03-03", "Ditillation FAQ", 39, "early"], ["2025-03-11", "Unsloth Alpaca", 247, "frame"], ["2025-03-27", "Torchtune runs", 247, "frame"], ["2025-04-17", "ALL_TRAINING tagged", 1357, "frame"], ["2025-04-22", "Acme_ALL_TRAINING", 3878, "frame"], ["2025-05-14", "Gemma v_2", 27060, "frame"], ["2025-06-04", "All_Acme v1", 143599, "prod"], ["2025-06-06", "production run", 119666, "prod"], ["2025-07-18", "CLI smoke test (TEST customer)", 6, "prod"]]};</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>
 (function(){
